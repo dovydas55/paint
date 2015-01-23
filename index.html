@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Online Whiteboard</title>
+
+    <link rel="stylesheet" href="css/colorpicker.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="css/layout.css" />
+
+    <!-- Various Scripts-->
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/colorpicker.js"></script>
+    <script type="text/javascript" src="js/eye.js"></script>
+    <script type="text/javascript" src="js/utils.js"></script>
+    <script type="text/javascript" src="js/layout.js?ver=1.0.2"></script>
+
+
+    <!--Main Script-->
+    <script type="text/javascript" src="mainScript.js" async></script>
+    <script type="text/javascript" src="js/Base.js"></script>
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Style -->
+    <link href="style.css" rel="stylesheet"> 
+  </head>
+
+  <body>
+
+      <div id="navigation">
+        <ul id="menu">
+          <li><a href="#" id="newFile">New</a></li>
+          <li><a href="#">Save</a></li>
+          <li><a href="#">Load</a></li>
+        </ul>
+        <ul id="action">
+          <li><a title="Undo" data-undochoice="undo" class="testLink" href="#"> <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"> </span> </a></li>
+          <li><a title="Redo" data-undochoice="redo" class="testLink" href="#"> <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"> </span> </a> </li>
+        </ul>
+      </div>
+
+      <div id="canvasContainer">      
+        <canvas id="myCanvas" width="1000" height="500">Your browser does not support the HTML5 canvas tag.</canvas>
+      </div>
+      
+
+      <h3 id="status">
+        0, 0
+      </h3>
+
+      <div id="actionBar">
+        <table id="colorTable">
+          <tr>
+            <td> <a class="colorLink" href="#" data-colorValue="000000"> <img class="pic" src="gfx/000000.jpg" alt="" > </a> </td>
+            <td> <a class="colorLink" href="#" data-colorValue="2400ff"> <img class="pic" src="gfx/2400ff.jpg" alt="" > </a> </td>
+            <td> <a class="colorLink" href="#" data-colorValue="00ff18"> <img class="pic" src="gfx/00ff18.jpg" alt="" > </a> </td>
+            <td> <a class="colorLink" href="#" data-colorValue="ff0000"> <img class="pic" src="gfx/ff0000.jpg" alt="" > </a> </td>
+            <td> <a class="colorLink" href="#" data-colorValue="ff00ea"> <img class="pic" src="gfx/ff00ea.jpg" alt="" > </a> </td>
+            <td> <a class="colorLink" href="#" data-colorValue="ff8a00"> <img class="pic" src="gfx/ff8a00.jpg" alt="" > </a> </td>
+            <td> <a class="colorLink" href="#" data-colorValue="b4afaf"> <img class="pic" src="gfx/b4afaf.jpg" alt="" > </a> </td>
+            <td> <a class="colorLink" href="#" data-colorValue="f0ff00"> <img class="pic" src="gfx/f0ff00.jpg" alt="" > </a> </td>
+            <td><div id="colorSelector"></div></td>
+            
+          </tr>
+
+          <tr>
+            <td> <a class="colorLink" href="#" data-colorValue="ffffff"> <img class="pic" src="gfx/ffffff.jpg" alt="" > </a> </td>
+            <td> <a class="colorLink" href="#" data-colorValue="00a2ff"> <img class="pic" src="gfx/00a2ff.jpg" alt="" > </a> </td>
+            <td> <a class="colorLink" href="#" data-colorValue="bbfd9b"> <img class="pic" src="gfx/bbfd9b.jpg" alt="" > </a> </td>
+            <td> <a class="colorLink" href="#" data-colorValue="ff7e7e"> <img class="pic" src="gfx/ff7e7e.jpg" alt="" > </a> </td>
+            <td> <a class="colorLink" href="#" data-colorValue="c259c3"> <img class="pic" src="gfx/c259c3.jpg" alt="" > </a> </td>
+            <td> <a class="colorLink" href="#" data-colorValue="a17d00"> <img class="pic" src="gfx/a17d00.jpg" alt="" > </a> </td>
+            <td> <a class="colorLink" href="#" data-colorValue="727372"> <img class="pic" src="gfx/727372.jpg" alt="" > </a> </td>
+            <td> <a class="colorLink" href="#" data-colorValue="c9c741"> <img class="pic" src="gfx/c9c741.jpg" alt="" > </a> </td>
+            <td></td>
+          </tr>
+        </table>
+
+        <table id="toolTable">
+          <tr>
+            <td> <a data-tool="pen" class="toolLink" title="Pen" href="#"> <img class="pic" src="gfx/Pencil-icon32.png" alt=""></a></td>
+            <td> <a data-tool="eraser" class="toolLink" title="Eraser" href="#"> <img class="pic" src="gfx/Eraser-icon.png" alt=""></a></td>
+            <td> <a data-tool="circle" class="toolLink" title="Circle" href="#"> <img class="pic" src="gfx/circle-icon.png" alt=""></a></td>
+            <td> <a data-tool="square" class="toolLink" title="Square" href="#"> <img class="pic" src="gfx/square-icon.png" alt=""></a></td>
+            <td> <a data-tool="select" class="toolLink" title="Select" href="#"> <img class="pic" src="gfx/move-icon.png" alt=""></a></td>
+          </tr>
+
+          <tr>
+            <td> <a data-tool="fill" class="toolLink" title="Fill" href="#"> <img class="pic" src="gfx/Actions-fill-color-icon.png" alt=""></a></td>
+            <td> <a data-tool="text_area" class="toolLink" title="Text Area" href="#"> <img class="pic" src="gfx/Actions-format-text-bold-icon.png" alt=""></a></td>
+            <td> <a data-tool="line" class="toolLink" title="Line" href="#"> <img class="pic" src="gfx/draw-line-icon.png" alt=""></a></td>
+            <td> <a data-tool="triangle" class="toolLink" title="Triangle" href="#"> <img class="pic" src="gfx/triangle-icon.png" alt=""></a></td>
+            <td> <a data-tool="arrow" class="toolLink" title="Arrow" href="#"> <img class="pic" src="gfx/Sign-Forward-icon.png" alt=""></a></td>
+          </tr>
+        </table>
+
+        <table id="furtherSettings">
+          <tr>
+            <td><a href="" > <img class="pic" src="gfx/Editing-Bold-icon.png" alt=""> </a></td>
+            <td><a href="" > <img class="pic" src="gfx/Editing-Italic-icon.png" alt=""> </a></td>
+            <td><a href="" > <img class="pic" src="gfx/Editing-Underline-icon.png" alt=""> </a></td>
+            <td>
+              <select>    
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11" selected>11</option>
+                <option value="12">12</option>
+                <option value="14">14</option>
+                <option value="16">16</option>
+                <option value="18">18</option>
+                <option value="20">20</option>
+                <option value="22">22</option>
+                <option value="24">24</option>
+                <option value="26">26</option>
+                <option value="28">28</option>
+                <option value="36">36</option>
+                <option value="48">48</option>
+                <option value="72">72</option>
+              </select>
+            </td>
+          </tr>
+        </table>
+
+        <select class="form-control" name="lineThickness" id="lineThickness">
+            <option value="5">Size 1</option>
+            <option value="10">Size 2</option>
+            <option value="15">Size 3</option>
+            <option value="20">Size 4</option>
+        </select>
+
+        <select class="form-control" id="selectFont">
+            <option selected>--Choose font--</option>
+          <option  disabled >Sans-serif</option>
+              <option>Arial</option>
+              <option>Arial Black</option>
+              <option>Arial Narrow</option>
+              <option>Arial Rounded MT Bold</option>
+              <option>Calibri</option>
+              <option>Candara</option>
+              <option>Century Gothic</option>
+              <option>Franklin Gothic Medium</option>
+              <option>Gill Sans</option>
+              <option>Helvetica</option>
+              <option>Segoe UI</option>
+              <option>Tahoma</option>
+              <option>Trebuchet MS</option>
+              <option>Verdana</option>
+          <option disabled >Serif</option> 
+              <option>Baskerville</option> 
+              <option>Bodoni MT</option>
+              <option>Book Antiqua</option>
+              <option>Calisto MT</option>
+              <option>Cambria</option>
+              <option>Garamond</option>
+              <option>Georgia</option>
+              <option>Goudy Old Style</option>
+              <option>Lucida Bright</option>
+              <option>Palatino</option>
+              <option>Perpetua</option>
+              <option>Rockwell</option>
+              <option>Times New Roman</option>
+          <option disabled>Monospaced</option>
+              <option>Consolas</option>
+              <option>Courier New</option>
+              <option>Lucida Console</option>
+              <option>Lucida Sans Typewriter</option>
+              <option>Monaco</option>
+              <option>Andale Mono</option>
+          <option disabled>Fantasy</option>
+              <option>Copperplate</option>
+              <option>Papyrus</option>
+        </select>
+      </div>
+
+    <!-- For faster load time-->
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+  </body>
+</html>
