@@ -37,8 +37,6 @@ $(".fontSettings").click( function(){
 	console.log("The font type is " + drawing.fontType); 
 });
 
-
-
 /*read color*/
 $(".colorLink").click( function(){
 	drawing.penColor = $(this).data("colorvalue");
@@ -114,6 +112,14 @@ $("#myCanvas").mousedown(function(e) {
 	} else if (drawing.currentTool === "eraser"){
 		drawing.shapes.push(new Eraser(x, y, drawing.eraserColor, drawing.lineWidth, "null", "null", "null", "null"));
 	} else if (drawing.currentTool === "text_area"){
+		  /* ASK IN CLASS HOW TO FIX THIS!?
+			  var item = $("<textarea/>").addClass("_textArea").attr("rows", "4").attr("cols", "40").attr("placeholder", "enter your text here");
+			  $("#canvasContainer").append(item);
+			  $("._textArea").blur( function(){
+				drawing.inputText = $("._textArea").val();
+				$("._textArea").remove();
+			  });
+		  */
 		drawing.inputText = prompt("Enter your text: ");
 		drawing.shapes.push(new Text_Area(x, y, drawing.penColor, drawing.lineWidth, drawing.fontSize, drawing.fontName, drawing.fontType, drawing.inputText));
 		drawing.shapes[drawing.shapes.length - 1].draw(); 
