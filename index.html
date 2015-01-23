@@ -43,7 +43,6 @@
       <div id="canvasContainer">      
         <canvas id="myCanvas" width="1000" height="500">Your browser does not support the HTML5 canvas tag.</canvas>
       </div>
-      
 
       <h3 id="status">
         0, 0
@@ -97,11 +96,11 @@
 
         <table id="furtherSettings">
           <tr>
-            <td><a href="" > <img class="pic" src="gfx/Editing-Bold-icon.png" alt=""> </a></td>
-            <td><a href="" > <img class="pic" src="gfx/Editing-Italic-icon.png" alt=""> </a></td>
-            <td><a href="" > <img class="pic" src="gfx/Editing-Underline-icon.png" alt=""> </a></td>
+            <td><a href="#" data-tool="bold" class="fontSettings"> <img class="pic" src="gfx/Editing-Bold-icon.png" alt=""> </a></td>
+            <td><a href="#" data-tool="italic" class="fontSettings"> <img class="pic" src="gfx/Editing-Italic-icon.png" alt=""> </a></td>
+            <td><a href="#" data-tool="" class="fontSettings"> <img class="pic" src="gfx/Editing-Underline-icon.png" alt=""> </a></td> <!-- TODO: CHANGE ICON TO R-->
             <td>
-              <select>    
+              <select name="fontSize" id="fontSize">    
                 <option value="8">8</option>
                 <option value="9">9</option>
                 <option value="10">10</option>
@@ -130,47 +129,46 @@
             <option value="20">Size 4</option>
         </select>
 
-        <select class="form-control" id="selectFont">
-            <option selected>--Choose font--</option>
+        <select class="form-control" name="selectFont" id="selectFont">
           <option  disabled >Sans-serif</option>
-              <option>Arial</option>
-              <option>Arial Black</option>
-              <option>Arial Narrow</option>
-              <option>Arial Rounded MT Bold</option>
-              <option>Calibri</option>
-              <option>Candara</option>
-              <option>Century Gothic</option>
-              <option>Franklin Gothic Medium</option>
-              <option>Gill Sans</option>
-              <option>Helvetica</option>
-              <option>Segoe UI</option>
-              <option>Tahoma</option>
-              <option>Trebuchet MS</option>
-              <option>Verdana</option>
+              <option value="Arial">Arial</option>
+              <option value="Arial Black">Arial Black</option>
+              <option value="Arial Narrow">Arial Narrow</option>
+              <option value="Arial Rounded MT Bold">Arial Rounded MT Bold</option>
+              <option value="Calibri">Calibri</option>
+              <option value="Candara">Candara</option>
+              <option value="Century Gothic">Century Gothic</option>
+              <option value="Franklin Gothic Medium">Franklin Gothic Medium</option>
+              <option value="Gill Sans">Gill Sans</option>
+              <option value="Helvetica">Helvetica</option>
+              <option value="Segoe UI">Segoe UI</option>
+              <option value="Tahoma">Tahoma</option>
+              <option value="Trebuchet MS">Trebuchet MS</option>
+              <option selected>Verdana</option>
           <option disabled >Serif</option> 
-              <option>Baskerville</option> 
-              <option>Bodoni MT</option>
-              <option>Book Antiqua</option>
-              <option>Calisto MT</option>
-              <option>Cambria</option>
-              <option>Garamond</option>
-              <option>Georgia</option>
-              <option>Goudy Old Style</option>
-              <option>Lucida Bright</option>
-              <option>Palatino</option>
-              <option>Perpetua</option>
-              <option>Rockwell</option>
-              <option>Times New Roman</option>
+              <option value="Baskerville">Baskerville</option> 
+              <option value="Bodoni MT">Bodoni MT</option>
+              <option value="Book Antiqua">Book Antiqua</option>
+              <option value="Calisto MT">Calisto MT</option>
+              <option value="Cambria">Cambria</option>
+              <option value="Garamond">Garamond</option>
+              <option value="Georgia">Georgia</option>
+              <option value="Goudy Old Style">Goudy Old Style</option>
+              <option value="Lucida Bright">Lucida Bright</option>
+              <option value="Palatino">Palatino</option>
+              <option value="Perpetua">Perpetua</option>
+              <option value="Rockwell">Rockwell</option>
+              <option value="Times New Roman">Times New Roman</option>
           <option disabled>Monospaced</option>
-              <option>Consolas</option>
-              <option>Courier New</option>
-              <option>Lucida Console</option>
-              <option>Lucida Sans Typewriter</option>
-              <option>Monaco</option>
-              <option>Andale Mono</option>
+              <option value="Consolas">Consolas</option>
+              <option value="Courier New">Courier New</option>
+              <option value="Lucida Console">Lucida Console</option>
+              <option value="Lucida Sans Typewriter">Lucida Sans Typewriter</option>
+              <option value="Monaco">Monaco</option>
+              <option value="Andale Mono">Andale Mono</option>
           <option disabled>Fantasy</option>
-              <option>Copperplate</option>
-              <option>Papyrus</option>
+              <option value="Copperplate">Copperplate</option>
+              <option value="Papyrus">Papyrus</option>
         </select>
       </div>
 

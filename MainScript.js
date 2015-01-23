@@ -10,12 +10,34 @@ var drawing = {
 	penColor: "000000",
 	eraserColor: "ffffff",
 	undoRedo: "NULL",
+	fontSize: 11,
+	fontName: "Verdana",
+	fontType: "",
+	inputText: "",
 	drawAllShapes: function drawAll() {
 		for (var i = 0; i < drawing.shapes.length; i++) {
 			drawing.shapes[i].draw();
 		}
 	}
 }
+
+/*font manipulation*/
+$("#fontSize").change( function(){
+	drawing.fontSize = $("#fontSize").val();
+	console.log("your font size is " + drawing.fontSize);
+});
+
+$("#selectFont").change( function(){
+	drawing.fontName = $("#selectFont").val();
+	console.log("your font size is " + drawing.fontName);
+});
+
+$(".fontSettings").click( function(){
+	drawing.fontType = $(this).data("tool");
+	console.log("The font type is " + drawing.fontType); 
+});
+
+
 
 /*read color*/
 $(".colorLink").click( function(){
@@ -60,7 +82,7 @@ $(".testLink").click(function(){
 	/*test a currect implementation!!!!!*/
 	/*test case: draw 3 objects*/
 	/*undo 3 times*/
-	/*draw 2 more ubjects*/
+	/*draw 2 more objects*/
 	/*then press redo? what should come up? */
 	drawing.undoRedo = $(this).data("undochoice");
 	console.log($(this).data("undochoice"));
@@ -70,7 +92,6 @@ $(".testLink").click(function(){
 		drawing.cache.push(undo_me); 
 	} else if (drawing.undoRedo === "redo" && drawing.cache.length !== 0){
 		var redo_me = drawing.cache.pop();
-		console.log(redo_me);
 		drawing.shapes.push(redo_me);
 	}
 
@@ -86,12 +107,16 @@ $("#myCanvas").mousedown(function(e) {
 	ctx.beginPath();
 	drawing.isDrawing = true; 
 	if(drawing.currentTool === "square"){
-		drawing.shapes.push(new Square(x, y, drawing.penColor, drawing.lineWidth)); 
+		drawing.shapes.push(new Square(x, y, drawing.penColor, drawing.lineWidth, "null", "null", "null", "null")); 
 	} else if (drawing.currentTool === "pen"){
 		ctx.moveTo(x, y);
-		drawing.shapes.push(new Pen(x, y, drawing.penColor, drawing.lineWidth));
+		drawing.shapes.push(new Pen(x, y, drawing.penColor, drawing.lineWidth, "null", "null", "null", "null"));
 	} else if (drawing.currentTool === "eraser"){
-		drawing.shapes.push(new Eraser(x, y, drawing.eraserColor, drawing.lineWidth));
+		drawing.shapes.push(new Eraser(x, y, drawing.eraserColor, drawing.lineWidth, "null", "null", "null", "null"));
+	} else if (drawing.currentTool === "text_area"){
+		drawing.inputText = prompt("Enter your text: ");
+		drawing.shapes.push(new Text_Area(x, y, drawing.penColor, drawing.lineWidth, drawing.fontSize, drawing.fontName, drawing.fontType, drawing.inputText));
+		drawing.shapes[drawing.shapes.length - 1].draw(); 
 	}
 
 });
@@ -102,9 +127,11 @@ $("#myCanvas").mousemove(function(e){
 	$("#status").html( x +", "+ y );
 	
 	/*Styling mouse cursor*/
-	$(this).css( 'cursor', 'url(gfx/mouseIcon.png), auto' );
-	
-
+	if(drawing.currentTool === "eraser"){
+		$(this).css( 'cursor', 'url(gfx/erase.png), auto' );
+	} else {
+		$(this).css( 'cursor', 'url(gfx/mouseIcon.png), auto' );	
+	}
 
 	if(drawing.isDrawing){		
 		if(drawing.currentTool === "square"){
@@ -124,6 +151,8 @@ $("#myCanvas").mousemove(function(e){
 			ctx.clearRect(0, 0, el.width, el.height);
 			drawing.shapes[drawing.shapes.length - 1].draw();
 			drawing.drawAllShapes();
+		} else if (drawing.currentTool === "text_area"){
+			//drawing.shapes[drawing.shapes.length - 1].draw();
 		}
 
 	}
@@ -140,11 +169,15 @@ $("#myCanvas").mouseup(function(){
 /*****************/
 
 var Shape = Base.extend({
-	constructor: function(x, y, color, width){
+	constructor: function(x, y, color, width, size, name, type, text){
 		this.x = x; // Each instance of derived classes
 		this.y = y; // will have their own copies of x and y
 		this.color = color;
 		this.lineWidth = width;
+		this.fontSize = size;
+		this.fontName = name;
+		this.fontType = type;
+		this.inputText = text;
 
 	},
 	draw: function(context){
@@ -172,6 +205,14 @@ var Eraser = Shape.extend({
 	}
 });
 
+var Text_Area = Shape.extend({
+	draw: function(){
+		ctx.fillStyle = "#" + this.color;
+		ctx.font = this.fontType+ " " + this.fontSize + "pt " + this.fontName;
+  		ctx.fillText(this.inputText, this.x, this.y);
+	}
+});
+
 /*WAAAAAYYY TOOOO SLOOOOOWWW */
 var Pen = Shape.extend({
 	cords: [],
@@ -187,13 +228,13 @@ var Pen = Shape.extend({
 		 
 	},
 	draw: function(){
-		ctx.moveTo(this.x, this.y);
+		//ctx.moveTo(this.x, this.y);
+		ctx.beginPath();
+		ctx.lineJoin = ctx.lineCap = "round";
+		ctx.lineWidth = this.lineWidth;
+		ctx.strokeStyle = "#" + this.color; 
 		for(var i = 0; i < this.cords.length; i++){
-			ctx.lineJoin = ctx.lineCap = "round";
 			ctx.lineTo(this.cords[i].x, this.cords[i].y);
-
-			ctx.lineWidth = this.lineWidth;
-			ctx.strokeStyle = "#" + this.color; 
 			ctx.stroke();	
 		}
 	}
