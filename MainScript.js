@@ -117,6 +117,12 @@ $("#myCanvas").mousedown(function(e) {
 		drawing.inputText = prompt("Enter your text: ");
 		drawing.shapes.push(new Text_Area(x, y, drawing.penColor, drawing.lineWidth, drawing.fontSize, drawing.fontName, drawing.fontType, drawing.inputText));
 		drawing.shapes[drawing.shapes.length - 1].draw(); 
+	}else if(drawing.currentTool === "line"){
+		drawing.shapes.push(new Line(x, y, drawing.penColor, drawing.lineWidth, "null", "null", "null", "null" ));
+		console.log(drawing.shapes.length);
+	}else if(drawing.currentTool === "circle"){
+		drawing.shapes.push(new Circle(x, y, drawing.penColor, drawing.lineWidth, "null", "null", "null", "null"));
+		
 	}
 
 });
@@ -153,6 +159,19 @@ $("#myCanvas").mousemove(function(e){
 			drawing.drawAllShapes();
 		} else if (drawing.currentTool === "text_area"){
 			//drawing.shapes[drawing.shapes.length - 1].draw();
+		} else if (drawing.currentTool === "line"){
+			drawing.shapes[drawing.shapes.length - 1].pointX = x;
+			drawing.shapes[drawing.shapes.length - 1].pointY = y;
+			ctx.clearRect(0, 0, el.width, el.height);
+			drawing.shapes[drawing.shapes.length - 1].draw();
+			drawing.drawAllShapes();
+		} else if(drawing.currentTool === "circle"){
+			drawing.shapes[drawing.shapes.length - 1].xLength = x - drawing.shapes[drawing.shapes.length - 1].x;
+			drawing.shapes[drawing.shapes.length - 1].yLength = y - drawing.shapes[drawing.shapes.length - 1].y;
+			drawing.shapes[drawing.shapes.length - 1].draw();
+			ctx.clearRect(0, 0, el.width, el.height);
+			drawing.drawAllShapes();
+
 		}
 
 	}
@@ -202,6 +221,34 @@ var Eraser = Shape.extend({
 		 //ctx.lineWidth = this.lineWidth;
 		 ctx.fillStyle = "#" + this.color;
 		 ctx.fillRect(this.x, this.y, this.width, this.height);
+	}
+});
+
+var Line = Shape.extend({
+	pointX: 0,
+	pointY: 0,
+	draw: function(){
+		 ctx.beginPath();
+		 ctx.strokeStyle = "#" + this.color;
+		 ctx.lineWidth = this.lineWidth; 
+		 ctx.moveTo(this.x, this.y);
+		 ctx.lineTo(this.pointX, this.pointY);
+		 ctx.stroke();
+	}
+});
+
+var Circle = Shape.extend({
+	xLength: 0,
+	yLength: 0,
+	
+
+	draw: function(){
+		ctx.beginPath();
+		console.log( Math.sqrt( Math.pow(Math.abs(this.xLength), 2) + Math.pow(Math.abs(this.yLength), 2) ));
+		ctx.arc(this.x, this.y, Math.sqrt( Math.pow(Math.abs(this.xLength), 2) + Math.pow(Math.abs(this.yLength), 2) ), 0, 2 * Math.PI, false ); 
+		ctx.lineWidth = this.lineWidth; 
+		ctx.strokeStyle = "#" + this.color;
+		ctx.stroke( );
 	}
 });
 
