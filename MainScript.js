@@ -21,6 +21,25 @@ var drawing = {
 	}
 }
 
+/*fetching file url*/
+$("#form1").change( function(e){
+	var reader = new FileReader();
+    reader.onload = function(event){
+        var img = new Image();
+        img.onload = function(){
+            //el.width = img.width; //we can do this if you want to adjust canvas size to the image size!
+            //el.height = img.height;
+            ctx.drawImage(img,10,10); //always spawn new images at 10,10
+        }
+        var getUrl = event.target.result;
+        drawing.shapes.push(new uploadImage(10, 10, "null", "null"));
+        drawing.shapes[drawing.shapes.length - 1].url = getUrl;
+        img.src = getUrl;
+    }
+    reader.readAsDataURL(e.target.files[0]);   
+});
+
+
 /*font manipulation*/
 $("#fontSize").change( function(){
 	drawing.fontSize = $("#fontSize").val();
@@ -105,12 +124,12 @@ $("#myCanvas").mousedown(function(e) {
 	ctx.beginPath();
 	drawing.isDrawing = true; 
 	if(drawing.currentTool === "square"){
-		drawing.shapes.push(new Square(x, y, drawing.penColor, drawing.lineWidth, "null", "null", "null", "null")); 
+		drawing.shapes.push(new Square(x, y, drawing.penColor, drawing.lineWidth)); 
 	} else if (drawing.currentTool === "pen"){
 		ctx.moveTo(x, y);
-		drawing.shapes.push(new Pen(x, y, drawing.penColor, drawing.lineWidth, "null", "null", "null", "null"));
+		drawing.shapes.push(new Pen(x, y, drawing.penColor, drawing.lineWidth));
 	} else if (drawing.currentTool === "eraser"){
-		drawing.shapes.push(new Eraser(x, y, drawing.eraserColor, drawing.lineWidth, "null", "null", "null", "null"));
+		drawing.shapes.push(new Eraser(x, y, drawing.eraserColor, drawing.lineWidth));
 	} else if (drawing.currentTool === "text_area"){
 		  /* ASK IN CLASS HOW TO FIX THIS!?
 			  var item = $("<textarea/>").addClass("_textArea").attr("rows", "4").attr("cols", "40").attr("placeholder", "enter your text here");
@@ -121,13 +140,20 @@ $("#myCanvas").mousedown(function(e) {
 			  });
 		  */
 		drawing.inputText = prompt("Enter your text: ");
-		drawing.shapes.push(new Text_Area(x, y, drawing.penColor, drawing.lineWidth, drawing.fontSize, drawing.fontName, drawing.fontType, drawing.inputText));
-		drawing.shapes[drawing.shapes.length - 1].draw(); 
+		if(drawing.inputText !== null){
+			drawing.shapes.push(new Text_Area(x, y, drawing.penColor, drawing.lineWidth));
+			drawing.shapes[drawing.shapes.length - 1].fontSize = drawing.fontSize;
+			drawing.shapes[drawing.shapes.length - 1].fontName = drawing.fontName;
+			drawing.shapes[drawing.shapes.length - 1].fontType = drawing.fontType;
+			drawing.shapes[drawing.shapes.length - 1].inputText = drawing.inputText;
+			drawing.shapes[drawing.shapes.length - 1].draw();
+		} 
+
 	}else if(drawing.currentTool === "line"){
-		drawing.shapes.push(new Line(x, y, drawing.penColor, drawing.lineWidth, "null", "null", "null", "null" ));
+		drawing.shapes.push(new Line(x, y, drawing.penColor, drawing.lineWidth));
 		console.log(drawing.shapes.length);
 	}else if(drawing.currentTool === "circle"){
-		drawing.shapes.push(new Circle(x, y, drawing.penColor, drawing.lineWidth, "null", "null", "null", "null"));
+		drawing.shapes.push(new Circle(x, y, drawing.penColor, drawing.lineWidth));
 		
 	}
 
@@ -194,16 +220,11 @@ $("#myCanvas").mouseup(function(){
 /*****************/
 
 var Shape = Base.extend({
-	constructor: function(x, y, color, width, size, name, type, text){
+	constructor: function(x, y, color, width){
 		this.x = x; // Each instance of derived classes
 		this.y = y; // will have their own copies of x and y
 		this.color = color;
 		this.lineWidth = width;
-		this.fontSize = size;
-		this.fontName = name;
-		this.fontType = type;
-		this.inputText = text;
-
 	},
 	draw: function(context){
 		// The base version shouldn’t really do anything...
@@ -259,10 +280,27 @@ var Circle = Shape.extend({
 });
 
 var Text_Area = Shape.extend({
+	fontSize: 11,
+	fontName: "Verdana",
+	fontType: "",
+	inputText: "",
 	draw: function(){
 		ctx.fillStyle = "#" + this.color;
 		ctx.font = this.fontType+ " " + this.fontSize + "pt " + this.fontName;
   		ctx.fillText(this.inputText, this.x, this.y);
+	}
+});
+
+var uploadImage = Shape.extend({
+	url: "",
+	draw: function(){
+		var ptr = this;
+		var img = new Image();
+        img.onload = function(){
+            ctx.drawImage(img, ptr.x, ptr.y); /**/
+        }
+        img.src = this.url;
+
 	}
 });
 

@@ -32,7 +32,7 @@
         <ul id="menu">
           <li><a href="#" id="newFile">New</a></li>
           <li><a href="#">Save</a></li>
-          <li><a href="#">Load</a></li>
+          <li><a href="#" id="load">Load</a></li>
         </ul>
         <ul id="action">
           <li><a title="Undo" data-undochoice="undo" class="testLink" href="#"> <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"> </span> </a></li>
@@ -172,6 +172,10 @@
               <option value="Papyrus">Papyrus</option>
         </select>
       </div>
+
+       <form id="form1">
+           <input type="file" id="fileURL" />
+       </form>
 
     <!-- For faster load time-->
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
