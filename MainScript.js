@@ -22,7 +22,7 @@ var drawing = {
 }
 
 /*fetching file url*/
-$("#form1").change( function(e){
+$("#fileURL").change( function(e){
 	var reader = new FileReader();
     reader.onload = function(event){
         var img = new Image();
@@ -155,6 +155,14 @@ $("#myCanvas").mousedown(function(e) {
 	}else if(drawing.currentTool === "circle"){
 		drawing.shapes.push(new Circle(x, y, drawing.penColor, drawing.lineWidth));
 		
+	}/*else if(drawing.currentTool === "triangle"){
+		drawing.shapes.push(new Triangle(x, y, drawing.penColor, drawing.lineWidth));
+		drawing.shapes[drawing.shapes.length - 1].draw();
+		
+	}*/else if(drawing.currentTool === "arrow2"){
+		drawing.shapes.push(new Arrow2(x, y, drawing.penColor, drawing.lineWidth));
+	}else if(drawing.currentTool === "arrow"){
+		drawing.shapes.push(new Arrow(x, y, drawing.penColor, drawing.lineWidth));
 	}
 
 });
@@ -204,6 +212,24 @@ $("#myCanvas").mousemove(function(e){
 			ctx.clearRect(0, 0, el.width, el.height);
 			drawing.drawAllShapes();
 
+		}else if(drawing.currentTool === "arrow2"){
+			drawing.shapes[drawing.shapes.length - 1].pointX = x;
+			drawing.shapes[drawing.shapes.length - 1].pointY = y;
+			ctx.clearRect(0, 0, el.width, el.height);
+			drawing.shapes[drawing.shapes.length - 1].draw();
+			drawing.drawAllShapes();
+			
+			
+
+		}else if(drawing.currentTool === "arrow"){
+			drawing.shapes[drawing.shapes.length - 1].pointX = x;
+			drawing.shapes[drawing.shapes.length - 1].pointY = y;
+			ctx.clearRect(0, 0, el.width, el.height);
+			drawing.shapes[drawing.shapes.length - 1].draw();
+			drawing.drawAllShapes();
+			
+			
+
 		}
 
 	}
@@ -251,18 +277,7 @@ var Eraser = Shape.extend({
 	}
 });
 
-var Line = Shape.extend({
-	pointX: 0,
-	pointY: 0,
-	draw: function(){
-		 ctx.beginPath();
-		 ctx.strokeStyle = "#" + this.color;
-		 ctx.lineWidth = this.lineWidth; 
-		 ctx.moveTo(this.x, this.y);
-		 ctx.lineTo(this.pointX, this.pointY);
-		 ctx.stroke();
-	}
-});
+
 
 var Circle = Shape.extend({
 	xLength: 0,
@@ -276,6 +291,94 @@ var Circle = Shape.extend({
 		ctx.lineWidth = this.lineWidth; 
 		ctx.strokeStyle = "#" + this.color;
 		ctx.stroke( );
+	}
+});
+
+var Triangle = Shape.extend({
+	width: 0,
+	hight: 0,
+	
+	draw: function(){
+
+		ctx.lineWidth = this.lineWidth; 
+		ctx.strokeStyle = "#" + this.color; 
+		ctx.beginPath();
+		ctx.moveTo(300,100);
+    	ctx.lineTo(300,300);
+    	ctx.lineTo(100,300);
+    	ctx.closePath();
+    	ctx.stroke();
+		
+	}
+});
+var Line = Shape.extend({
+	pointX: 0,
+	pointY: 0,
+	draw: function(){
+		 ctx.beginPath();
+		 ctx.strokeStyle = "#" + this.color;
+		 ctx.lineWidth = this.lineWidth; 
+		 ctx.moveTo(this.x, this.y);
+		 ctx.lineTo(this.pointX, this.pointY);
+		 ctx.stroke();
+	}
+});
+
+var Arrow = Shape.extend({
+	pointX: 0,
+	pointY: 0,
+	
+	draw: function(){
+
+		ctx.beginPath();
+		ctx.strokeStyle = "#" + this.color; 
+		ctx.lineWidth = this.lineWidth; 
+		ctx.fillStyle = "#" + this.color;
+
+		ctx.moveTo(this.x, this.y);
+		ctx.lineTo(this.pointX, this.pointY);
+		ctx.lineTo(this.pointX-25, this.pointY-25);
+		ctx.arcTo(this.pointX, this.pointY, this.pointX-25, this.pointY+25, 35);
+		ctx.lineTo(this.pointX, this.pointY);
+
+		/*ctx.moveTo(150, 400);
+		ctx.lineTo(400,400);
+		ctx.lineTo(375,375);
+		ctx.arcTo(400,400,375,425,35);
+		ctx.lineTo(400,400);*/
+
+		ctx.fill();
+		ctx.stroke();
+		
+	}
+});
+
+var Arrow2 = Shape.extend({
+	pointX: 0,
+	pointY: 0,
+	
+	draw: function(){
+
+		ctx.beginPath();
+		ctx.strokeStyle = "#" + this.color; 
+		ctx.lineWidth = this.lineWidth; 
+		ctx.fillStyle = "#" + this.color;
+
+		ctx.moveTo(this.x, this.y);
+		ctx.lineTo(this.pointX, this.pointY);
+		ctx.lineTo(this.pointX+25, this.pointY+25);
+		ctx.arcTo(this.pointX, this.pointY, this.pointX+25, this.pointY-25, 35);
+		ctx.lineTo(this.pointX, this.pointY);
+
+		/*ctx.moveTo(150, 400);
+		ctx.lineTo(400,400);
+		ctx.lineTo(375,375);
+		ctx.arcTo(400,400,375,425,35);
+		ctx.lineTo(400,400);*/
+
+		ctx.fill();
+		ctx.stroke();
+		
 	}
 });
 
@@ -310,6 +413,7 @@ var Pen = Shape.extend({
 	pointX: 0,
 	pointY: 0,
 	penDraw: function(){
+
 		ctx.lineJoin = ctx.lineCap = "round";
 		ctx.lineTo(this.pointX, this.pointY);
 

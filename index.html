@@ -28,11 +28,13 @@
 
   <body>
 
+      <a href="#"><input type="file" id="fileURL" /></a>
       <div id="navigation">
         <ul id="menu">
+          <li></li>
           <li><a href="#" id="newFile">New</a></li>
           <li><a href="#">Save</a></li>
-          <li><a href="#" id="load">Load</a></li>
+          
         </ul>
         <ul id="action">
           <li><a title="Undo" data-undochoice="undo" class="testLink" href="#"> <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"> </span> </a></li>
@@ -89,7 +91,7 @@
             <td> <a data-tool="fill" class="toolLink" title="Fill" href="#"> <img class="pic" src="gfx/Actions-fill-color-icon.png" alt=""></a></td>
             <td> <a data-tool="text_area" class="toolLink" title="Text Area" href="#"> <img class="pic" src="gfx/Actions-format-text-bold-icon.png" alt=""></a></td>
             <td> <a data-tool="line" class="toolLink" title="Line" href="#"> <img class="pic" src="gfx/draw-line-icon.png" alt=""></a></td>
-            <td> <a data-tool="triangle" class="toolLink" title="Triangle" href="#"> <img class="pic" src="gfx/triangle-icon.png" alt=""></a></td>
+            <td> <a data-tool="arrow2" class="toolLink" title="Arrow2" href="#"> <img class="pic" src="gfx/triangle-icon.png" alt=""></a></td>
             <td> <a data-tool="arrow" class="toolLink" title="Arrow" href="#"> <img class="pic" src="gfx/Sign-Forward-icon.png" alt=""></a></td>
           </tr>
         </table>
@@ -173,9 +175,8 @@
         </select>
       </div>
 
-       <form id="form1">
-           <input type="file" id="fileURL" />
-       </form>
+      
+       
 
     <!-- For faster load time-->
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
