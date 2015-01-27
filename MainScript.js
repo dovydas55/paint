@@ -27,8 +27,8 @@ $("#fileURL").change( function(e){
     reader.onload = function(event){
         var img = new Image();
         img.onload = function(){
-            //el.width = img.width; //we can do this if you want to adjust canvas size to the image size!
-            //el.height = img.height;
+        	img.width = el.width; //we can do this if you want to adjust canvas size to the image size!
+            img.height = el.height;
             ctx.drawImage(img,10,10); //always spawn new images at 10,10
         }
         var getUrl = event.target.result;
@@ -83,13 +83,10 @@ $('#lineThickness').change( function(){
 	console.log("your line width is " + drawing.lineWidth);
 });
 
-
-
 $("#newFile").click(function(){
 	if(confirm("Are you sure you want to start a new painting?")){
 		location.reload();	
 	}
-	
 });
 
 /*read undo/redo*/
@@ -121,7 +118,6 @@ $("#myCanvas").mousedown(function(e) {
 	var x = e.pageX - this.offsetLeft;
 	var y = e.pageY - this.offsetTop;
 
-	ctx.beginPath();
 	drawing.isDrawing = true; 
 	if(drawing.currentTool === "square"){
 		drawing.shapes.push(new Square(x, y, drawing.penColor, drawing.lineWidth)); 
@@ -155,11 +151,7 @@ $("#myCanvas").mousedown(function(e) {
 	}else if(drawing.currentTool === "circle"){
 		drawing.shapes.push(new Circle(x, y, drawing.penColor, drawing.lineWidth));
 		
-	}/*else if(drawing.currentTool === "triangle"){
-		drawing.shapes.push(new Triangle(x, y, drawing.penColor, drawing.lineWidth));
-		drawing.shapes[drawing.shapes.length - 1].draw();
-		
-	}*/else if(drawing.currentTool === "arrow2"){
+	}else if(drawing.currentTool === "arrow2"){
 		drawing.shapes.push(new Arrow2(x, y, drawing.penColor, drawing.lineWidth));
 	}else if(drawing.currentTool === "arrow"){
 		drawing.shapes.push(new Arrow(x, y, drawing.penColor, drawing.lineWidth));
@@ -197,8 +189,6 @@ $("#myCanvas").mousemove(function(e){
 			ctx.clearRect(0, 0, el.width, el.height);
 			drawing.shapes[drawing.shapes.length - 1].draw();
 			drawing.drawAllShapes();
-		} else if (drawing.currentTool === "text_area"){
-			//drawing.shapes[drawing.shapes.length - 1].draw();
 		} else if (drawing.currentTool === "line"){
 			drawing.shapes[drawing.shapes.length - 1].pointX = x;
 			drawing.shapes[drawing.shapes.length - 1].pointY = y;
@@ -218,8 +208,6 @@ $("#myCanvas").mousemove(function(e){
 			ctx.clearRect(0, 0, el.width, el.height);
 			drawing.shapes[drawing.shapes.length - 1].draw();
 			drawing.drawAllShapes();
-			
-			
 
 		}else if(drawing.currentTool === "arrow"){
 			drawing.shapes[drawing.shapes.length - 1].pointX = x;
@@ -227,21 +215,15 @@ $("#myCanvas").mousemove(function(e){
 			ctx.clearRect(0, 0, el.width, el.height);
 			drawing.shapes[drawing.shapes.length - 1].draw();
 			drawing.drawAllShapes();
-			
-			
-
 		}
 
 	}
 
 });
 
-
 $("#myCanvas").mouseup(function(){
-	drawing.isDrawing = false;
-	ctx.closePath(); /*not sure about this*/	
+	drawing.isDrawing = false;	
 });
-
 
 /*****************/
 
@@ -261,9 +243,11 @@ var Square = Shape.extend({
 	width: 0,
 	height: 0,
 	draw: function(){
+		ctx.beginPath();
 		 ctx.lineWidth = this.lineWidth;
 		 ctx.strokeStyle = "#" + this.color;
 		 ctx.strokeRect(this.x, this.y, this.width, this.height);
+		 ctx.closePath();
 	}
 });
 
@@ -271,13 +255,12 @@ var Eraser = Shape.extend({
 	width: 0,
 	height: 0,
 	draw: function(){
-		 //ctx.lineWidth = this.lineWidth;
+		 ctx.beginPath();
 		 ctx.fillStyle = "#" + this.color;
 		 ctx.fillRect(this.x, this.y, this.width, this.height);
+		 ctx.closePath();
 	}
 });
-
-
 
 var Circle = Shape.extend({
 	xLength: 0,
@@ -291,26 +274,10 @@ var Circle = Shape.extend({
 		ctx.lineWidth = this.lineWidth; 
 		ctx.strokeStyle = "#" + this.color;
 		ctx.stroke( );
+		ctx.closePath();
 	}
 });
 
-var Triangle = Shape.extend({
-	width: 0,
-	hight: 0,
-	
-	draw: function(){
-
-		ctx.lineWidth = this.lineWidth; 
-		ctx.strokeStyle = "#" + this.color; 
-		ctx.beginPath();
-		ctx.moveTo(300,100);
-    	ctx.lineTo(300,300);
-    	ctx.lineTo(100,300);
-    	ctx.closePath();
-    	ctx.stroke();
-		
-	}
-});
 var Line = Shape.extend({
 	pointX: 0,
 	pointY: 0,
@@ -321,6 +288,7 @@ var Line = Shape.extend({
 		 ctx.moveTo(this.x, this.y);
 		 ctx.lineTo(this.pointX, this.pointY);
 		 ctx.stroke();
+		 ctx.closePath();
 	}
 });
 
@@ -340,15 +308,9 @@ var Arrow = Shape.extend({
 		ctx.lineTo(this.pointX-25, this.pointY-25);
 		ctx.arcTo(this.pointX, this.pointY, this.pointX-25, this.pointY+25, 35);
 		ctx.lineTo(this.pointX, this.pointY);
-
-		/*ctx.moveTo(150, 400);
-		ctx.lineTo(400,400);
-		ctx.lineTo(375,375);
-		ctx.arcTo(400,400,375,425,35);
-		ctx.lineTo(400,400);*/
-
 		ctx.fill();
 		ctx.stroke();
+		ctx.closePath();
 		
 	}
 });
@@ -369,15 +331,9 @@ var Arrow2 = Shape.extend({
 		ctx.lineTo(this.pointX+25, this.pointY+25);
 		ctx.arcTo(this.pointX, this.pointY, this.pointX+25, this.pointY-25, 35);
 		ctx.lineTo(this.pointX, this.pointY);
-
-		/*ctx.moveTo(150, 400);
-		ctx.lineTo(400,400);
-		ctx.lineTo(375,375);
-		ctx.arcTo(400,400,375,425,35);
-		ctx.lineTo(400,400);*/
-
 		ctx.fill();
 		ctx.stroke();
+		ctx.closePath();
 		
 	}
 });
@@ -409,22 +365,27 @@ var uploadImage = Shape.extend({
 
 /*WAAAAAYYY TOOOO SLOOOOOWWW */
 var Pen = Shape.extend({
-	cords: [],
 	pointX: 0,
 	pointY: 0,
+	constructor: function(x, y, color, width){
+		ctx.moveTo(x, y);
+		this.base(x, y, color, width);
+		this.cords = [];
+	},
 	penDraw: function(){
 
 		ctx.lineJoin = ctx.lineCap = "round";
 		ctx.lineTo(this.pointX, this.pointY);
-
 		ctx.lineWidth = this.lineWidth;
 		ctx.strokeStyle = "#" + this.color; 
 		ctx.stroke();
+		ctx.clearRect(0, 0, el.width, el.height);
+		drawing.drawAllShapes();
 		 
 	},
 	draw: function(){
-		//ctx.moveTo(this.x, this.y);
 		ctx.beginPath();
+		ctx.moveTo(this.x, this.y);
 		ctx.lineJoin = ctx.lineCap = "round";
 		ctx.lineWidth = this.lineWidth;
 		ctx.strokeStyle = "#" + this.color; 
@@ -432,9 +393,9 @@ var Pen = Shape.extend({
 			ctx.lineTo(this.cords[i].x, this.cords[i].y);
 			ctx.stroke();	
 		}
+		ctx.closePath();
 	}
 });
-
 
 /*Utility point*/
 function Point(x, y){
