@@ -141,6 +141,13 @@ $("#myCanvas").mousemove(function(e){
 		if(!(drawing.currectObject() instanceof Pen)) drawing.drawAllShapes();
 	}
 
+	/*UNCOMMENT THIS IF YOU WORK WITH MOVING THE OBJECT
+	  BE CAREFUL CAN CRASH THE PROGRAM, THIS IS ONLY FOR DEBUGGING
+	if(drawing.currentTool === 'select'){
+		if(drawing.currectObject().containsMouse(x, y)) console.log("we are inside a particular shape");
+	}
+	*/
+
 });
 
 
@@ -161,7 +168,7 @@ var Shape = Base.extend({
 var Square = Shape.extend({
 	width: 0,
 	height: 0,
-	draw: function(){
+ 	draw: function(){
 		 ctx.beginPath();
 		 ctx.lineWidth = this.lineWidth;
 		 ctx.strokeStyle = "#" + this.color;
@@ -171,7 +178,12 @@ var Square = Shape.extend({
 	updateMe: function(x, y){
 		this.width = x - this.x;
 		this.height = y - this.y;
+
 		this.draw();
+	},
+	containsMouse: function(x, y){ //boolean
+		 //TODO: implement 
+		 //http://www.emanueleferonato.com/2012/03/09/algorithm-to-determine-if-a-point-is-inside-a-square-with-mathematics-no-hit-test-involved/
 	}
 });
 
@@ -188,44 +200,55 @@ var Eraser = Shape.extend({
 		this.width = x - this.x;
 		this.height = y - this.y;
 		this.draw();
+	},
+	containsMouse: function(x, y){ //you are not allowed to move an Eraser! 
+		 return false; 
 	}
 });
 
 var Circle = Shape.extend({
-	xLength: 0,
-	yLength: 0,
+	radius: 0,
 	draw: function(){
 		ctx.beginPath();
-		ctx.arc(this.x, this.y, Math.sqrt( Math.pow(Math.abs(this.xLength), 2) + Math.pow(Math.abs(this.yLength), 2) ), 0, 2 * Math.PI, false ); 
+		ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false ); 
 		ctx.lineWidth = this.lineWidth; 
 		ctx.strokeStyle = "#" + this.color;
 		ctx.stroke( );
 		ctx.closePath();
 	},
 	updateMe: function(x, y){
-		this.xLength = 	x - this.x;
-		this.yLength = y - this.y;
+		var xLength = 	x - this.x;
+		var yLength = y - this.y;
+		this.radius = Math.sqrt( Math.pow(Math.abs(xLength), 2) + Math.pow(Math.abs(yLength), 2) );
 		this.draw();
-	}
+	},
+	containsMouse: function(x, y){ //works!
+		var dist = Math.sqrt( Math.pow(Math.abs(this.x - x), 2) + Math.pow(Math.abs(this.y - y), 2) );
+		if(dist <= this.radius) return true;
+		else return false; 
+	}	
 });
 
 
 var Line = Shape.extend({
-	pointX: 0,
-	pointY: 0,
+	endX: 0,
+	endY: 0,
 	draw: function(){
 		 ctx.beginPath();
 		 ctx.strokeStyle = "#" + this.color;
 		 ctx.lineWidth = this.lineWidth; 
 		 ctx.moveTo(this.x, this.y);
-		 ctx.lineTo(this.pointX, this.pointY);
+		 ctx.lineTo(this.endX, this.endY);
 		 ctx.stroke();
 		 ctx.closePath();
 	},
 	updateMe: function(x, y){
-		this.pointX = x;
-		this.pointY = y;
+		this.endX = x;
+		this.endY = y;
 		this.draw();
+	},
+	containsMouse: function(x, y){ //boolean
+		return checkIfLineContainsMouse(x, y, this.x, this.y, this.endX, this.endY); 
 	}
 
 });
@@ -252,6 +275,9 @@ var Arrow = Shape.extend({
 		this.pointX = x;
 		this.pointY = y;
 		this.draw();
+	},
+	containsMouse: function(x, y){ //boolean
+		return checkIfLineContainsMouse(x, y, this.x, this.y, this.pointX, this.pointY); 
 	}
 
 });
@@ -278,6 +304,9 @@ var Arrow2 = Shape.extend({
 		this.pointX = x;
 		this.pointY = y;
 		this.draw();
+	},
+	containsMouse: function(x, y){ //boolean 
+		return checkIfLineContainsMouse(x, y, this.x, this.y, this.pointX, this.pointY);
 	}
 });
 
@@ -315,6 +344,15 @@ var Pen = Shape.extend({
 		this.pointX = x;
 		this.pointY = y;
 		this.penDraw();
+	},
+	containsMouse: function(x, y){ /*Not sure if this works properly!! TODO: debug*/
+		 var flag = false;
+		 for(var i = 0; i < this.cords.length; i++){
+		 	if(this.cords[i].x === x && this.cords[i].y === y){
+		 		flag = true;
+		 	}
+		 }
+		 return flag; 
 	}
 
 });
@@ -337,6 +375,9 @@ var Text_Area = Shape.extend({
 		ctx.fillStyle = "#" + this.color;
 		ctx.font = this.fontType+ " " + this.fontSize + "pt " + this.fontName;
   		ctx.fillText(this.inputText, this.x, this.y);
+	},
+	containsMouse: function(x, y){ //boolean
+		 //TODO: implement 
 	}
 });
 
@@ -351,6 +392,10 @@ var uploadImage = Shape.extend({
 	updateMe: function(link, pic){
 		this.url = link;
 		this.img = pic;
+	},
+	containsMouse: function(x, y){ //boolean
+		//should add img.width and img.height and then use same method as with square
+		 //TODO: implement 
 	}
 });
 
@@ -384,8 +429,18 @@ function Point(x, y){
 	this.y = y || 0; 
 }
 
+var distance = function(x1, y1, x2, y2){
+	var xDiff = x2 - x1;
+	var yDiff = y2 - y1;
+	return Math.sqrt(xDiff*xDiff + yDiff*yDiff);
+}
 
-
-
-
+var checkIfLineContainsMouse = function(x,y, startX, startY, endX, endY){
+	var t1 = distance(startX, startY, x, y) + distance(endX, endY, x, y); 
+	var t2 = distance(startX, startY, endX, endY);
+	t2 = t2.toFixed(1); //add more tolerance by lowering precision. Maybe add to 0 for better user experience
+	t1 = t1.toFixed(1); //add more tolerance by lowering precision.
+	if(t1 === t2) return true; 
+	else return false; 
+}
 
