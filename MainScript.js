@@ -18,29 +18,14 @@ var drawing = {
 		for (var i = 0; i < drawing.shapes.length; i++) {
 			drawing.shapes[i].draw();
 		}
+	},
+	currectObject: function(){
+		return drawing.shapes[drawing.shapes.length - 1];
 	}
 }
 
-/*fetching file url*/
-$("#fileURL").change( function(e){
-	var reader = new FileReader();
-    reader.onload = function(event){
-        var img = new Image();
-        img.onload = function(){
-        	img.width = el.width; //we can do this if you want to adjust canvas size to the image size!
-            img.height = el.height;
-            ctx.drawImage(img,10,10); //always spawn new images at 10,10
-        }
-        var getUrl = event.target.result;
-        drawing.shapes.push(new uploadImage(10, 10, "null", "null"));
-        drawing.shapes[drawing.shapes.length - 1].url = getUrl;
-        img.src = getUrl;
-    }
-    reader.readAsDataURL(e.target.files[0]);   
-});
-
-
-/*font manipulation*/
+/**********************************************************/
+/*font settings*/
 $("#fontSize").change( function(){
 	drawing.fontSize = $("#fontSize").val();
 	console.log("your font size is " + drawing.fontSize);
@@ -48,7 +33,7 @@ $("#fontSize").change( function(){
 
 $("#selectFont").change( function(){
 	drawing.fontName = $("#selectFont").val();
-	console.log("your font size is " + drawing.fontName);
+	console.log("your font is " + drawing.fontName);
 });
 
 $(".fontSettings").click( function(){
@@ -56,7 +41,7 @@ $(".fontSettings").click( function(){
 	console.log("The font type is " + drawing.fontType); 
 });
 
-/*read color*/
+/*color settings*/
 $(".colorLink").click( function(){
 	drawing.penColor = $(this).data("colorvalue");
 	console.log("The tool color is " + drawing.penColor); 
@@ -70,34 +55,27 @@ $('#colorSelector').ColorPicker({
     }
 });
 
-/*pick tool*/
+/*current tool*/
 $(".toolLink").click(function(){
 	drawing.currentTool = $(this).data("tool");
 	console.log("You are drawing with " + drawing.currentTool); 
 });
 
 /*Select line width*/
-/*NOTE: Do not forget to inilialize...*/
 $('#lineThickness').change( function(){
 	drawing.lineWidth = $('#lineThickness').val();
 	console.log("your line width is " + drawing.lineWidth);
 });
 
+/*start a new picture!*/
 $("#newFile").click(function(){
 	if(confirm("Are you sure you want to start a new painting?")){
 		location.reload();	
 	}
 });
 
-/*read undo/redo*/
+/*redo / undo operations*/
 $(".testLink").click(function(){
-
-	/*TODO: think a little better how does the redo work*/
-	/*test a currect implementation!!!!!*/
-	/*test case: draw 3 objects*/
-	/*undo 3 times*/
-	/*draw 2 more objects*/
-	/*then press redo? what should come up? */
 	drawing.undoRedo = $(this).data("undochoice");
 	console.log($(this).data("undochoice"));
 
@@ -113,50 +91,36 @@ $(".testLink").click(function(){
 	drawing.drawAllShapes(); 
 });
 
-/*Mouse movements*/
+/*Upload image*/
+$("#fileURL").change( function(e){
+	var reader = new FileReader();
+    reader.onload = function(event){
+        var img = new Image();
+        img.onload = function(){
+            ctx.drawImage(img,10,10); //always spawn new images at 10,10
+        }
+        var getUrl = event.target.result;
+        drawing.shapes.push(new uploadImage(10, 10, "null", "null"));
+        drawing.currectObject().updateMe(getUrl, img);
+        img.src = getUrl;
+    }
+    reader.readAsDataURL(e.target.files[0]);   
+});
+
+/**********************************************************/
+/*mouse operations*/
+
 $("#myCanvas").mousedown(function(e) {
 	var x = e.pageX - this.offsetLeft;
 	var y = e.pageY - this.offsetTop;
+	drawing.isDrawing = true;
+	var newShape = shapeFactory(x, y); 
+	drawing.shapes.push(newShape);
 
-	drawing.isDrawing = true; 
-	if(drawing.currentTool === "square"){
-		drawing.shapes.push(new Square(x, y, drawing.penColor, drawing.lineWidth)); 
-	} else if (drawing.currentTool === "pen"){
-		ctx.moveTo(x, y);
-		drawing.shapes.push(new Pen(x, y, drawing.penColor, drawing.lineWidth));
-	} else if (drawing.currentTool === "eraser"){
-		drawing.shapes.push(new Eraser(x, y, drawing.eraserColor, drawing.lineWidth));
-	} else if (drawing.currentTool === "text_area"){
-		  /* ASK IN CLASS HOW TO FIX THIS!?
-			  var item = $("<textarea/>").addClass("_textArea").attr("rows", "4").attr("cols", "40").attr("placeholder", "enter your text here");
-			  $("#canvasContainer").append(item);
-			  $("._textArea").blur( function(){
-				drawing.inputText = $("._textArea").val();
-				$("._textArea").remove();
-			  });
-		  */
-		drawing.inputText = prompt("Enter your text: ");
-		if(drawing.inputText !== null){
-			drawing.shapes.push(new Text_Area(x, y, drawing.penColor, drawing.lineWidth));
-			drawing.shapes[drawing.shapes.length - 1].fontSize = drawing.fontSize;
-			drawing.shapes[drawing.shapes.length - 1].fontName = drawing.fontName;
-			drawing.shapes[drawing.shapes.length - 1].fontType = drawing.fontType;
-			drawing.shapes[drawing.shapes.length - 1].inputText = drawing.inputText;
-			drawing.shapes[drawing.shapes.length - 1].draw();
-		} 
+});
 
-	}else if(drawing.currentTool === "line"){
-		drawing.shapes.push(new Line(x, y, drawing.penColor, drawing.lineWidth));
-		console.log(drawing.shapes.length);
-	}else if(drawing.currentTool === "circle"){
-		drawing.shapes.push(new Circle(x, y, drawing.penColor, drawing.lineWidth));
-		
-	}else if(drawing.currentTool === "arrow2"){
-		drawing.shapes.push(new Arrow2(x, y, drawing.penColor, drawing.lineWidth));
-	}else if(drawing.currentTool === "arrow"){
-		drawing.shapes.push(new Arrow(x, y, drawing.penColor, drawing.lineWidth));
-	}
-
+$("#myCanvas").mouseup(function(){
+	drawing.isDrawing = false;	
 });
 
 $("#myCanvas").mousemove(function(e){
@@ -171,66 +135,21 @@ $("#myCanvas").mousemove(function(e){
 		$(this).css( 'cursor', 'url(gfx/mouseIcon.png), auto' );	
 	}
 
-	if(drawing.isDrawing){		
-		if(drawing.currentTool === "square"){
-			drawing.shapes[drawing.shapes.length - 1].width = x - drawing.shapes[drawing.shapes.length - 1].x;
-			drawing.shapes[drawing.shapes.length - 1].height = y - drawing.shapes[drawing.shapes.length - 1].y;
-			ctx.clearRect(0, 0, el.width, el.height);
-			drawing.shapes[drawing.shapes.length - 1].draw();
-			drawing.drawAllShapes();
-		} else if (drawing.currentTool === "pen"){ /*TODO: debug pen class is acting strangeee*/
-			drawing.shapes[drawing.shapes.length - 1].cords.push(new Point(x, y));
-			drawing.shapes[drawing.shapes.length - 1].pointX = x;
-			drawing.shapes[drawing.shapes.length - 1].pointY = y; 
-			drawing.shapes[drawing.shapes.length - 1].penDraw();
-		} else if (drawing.currentTool === "eraser"){
-			drawing.shapes[drawing.shapes.length - 1].width = x - drawing.shapes[drawing.shapes.length - 1].x;
-			drawing.shapes[drawing.shapes.length - 1].height = y - drawing.shapes[drawing.shapes.length - 1].y;
-			ctx.clearRect(0, 0, el.width, el.height);
-			drawing.shapes[drawing.shapes.length - 1].draw();
-			drawing.drawAllShapes();
-		} else if (drawing.currentTool === "line"){
-			drawing.shapes[drawing.shapes.length - 1].pointX = x;
-			drawing.shapes[drawing.shapes.length - 1].pointY = y;
-			ctx.clearRect(0, 0, el.width, el.height);
-			drawing.shapes[drawing.shapes.length - 1].draw();
-			drawing.drawAllShapes();
-		} else if(drawing.currentTool === "circle"){
-			drawing.shapes[drawing.shapes.length - 1].xLength = x - drawing.shapes[drawing.shapes.length - 1].x;
-			drawing.shapes[drawing.shapes.length - 1].yLength = y - drawing.shapes[drawing.shapes.length - 1].y;
-			drawing.shapes[drawing.shapes.length - 1].draw();
-			ctx.clearRect(0, 0, el.width, el.height);
-			drawing.drawAllShapes();
-
-		}else if(drawing.currentTool === "arrow2"){
-			drawing.shapes[drawing.shapes.length - 1].pointX = x;
-			drawing.shapes[drawing.shapes.length - 1].pointY = y;
-			ctx.clearRect(0, 0, el.width, el.height);
-			drawing.shapes[drawing.shapes.length - 1].draw();
-			drawing.drawAllShapes();
-
-		}else if(drawing.currentTool === "arrow"){
-			drawing.shapes[drawing.shapes.length - 1].pointX = x;
-			drawing.shapes[drawing.shapes.length - 1].pointY = y;
-			ctx.clearRect(0, 0, el.width, el.height);
-			drawing.shapes[drawing.shapes.length - 1].draw();
-			drawing.drawAllShapes();
-		}
-
+	if(drawing.isDrawing){
+		if(!(drawing.currectObject() instanceof Pen)) ctx.clearRect(0, 0, el.width, el.height);
+		if(!(drawing.currectObject() instanceof Text_Area)) drawing.currectObject().updateMe(x, y); 
+		if(!(drawing.currectObject() instanceof Pen)) drawing.drawAllShapes();
 	}
 
 });
 
-$("#myCanvas").mouseup(function(){
-	drawing.isDrawing = false;	
-});
 
-/*****************/
-
+/**********************************************************/
+/*classes...*/
 var Shape = Base.extend({
 	constructor: function(x, y, color, width){
-		this.x = x; // Each instance of derived classes
-		this.y = y; // will have their own copies of x and y
+		this.x = x; 
+		this.y = y; 
 		this.color = color;
 		this.lineWidth = width;
 	},
@@ -243,11 +162,16 @@ var Square = Shape.extend({
 	width: 0,
 	height: 0,
 	draw: function(){
-		ctx.beginPath();
+		 ctx.beginPath();
 		 ctx.lineWidth = this.lineWidth;
 		 ctx.strokeStyle = "#" + this.color;
 		 ctx.strokeRect(this.x, this.y, this.width, this.height);
 		 ctx.closePath();
+	},
+	updateMe: function(x, y){
+		this.width = x - this.x;
+		this.height = y - this.y;
+		this.draw();
 	}
 });
 
@@ -259,24 +183,32 @@ var Eraser = Shape.extend({
 		 ctx.fillStyle = "#" + this.color;
 		 ctx.fillRect(this.x, this.y, this.width, this.height);
 		 ctx.closePath();
+	},
+	updateMe: function(x, y){
+		this.width = x - this.x;
+		this.height = y - this.y;
+		this.draw();
 	}
 });
 
 var Circle = Shape.extend({
 	xLength: 0,
 	yLength: 0,
-	
-
 	draw: function(){
 		ctx.beginPath();
-		console.log( Math.sqrt( Math.pow(Math.abs(this.xLength), 2) + Math.pow(Math.abs(this.yLength), 2) ));
 		ctx.arc(this.x, this.y, Math.sqrt( Math.pow(Math.abs(this.xLength), 2) + Math.pow(Math.abs(this.yLength), 2) ), 0, 2 * Math.PI, false ); 
 		ctx.lineWidth = this.lineWidth; 
 		ctx.strokeStyle = "#" + this.color;
 		ctx.stroke( );
 		ctx.closePath();
+	},
+	updateMe: function(x, y){
+		this.xLength = 	x - this.x;
+		this.yLength = y - this.y;
+		this.draw();
 	}
 });
+
 
 var Line = Shape.extend({
 	pointX: 0,
@@ -289,15 +221,19 @@ var Line = Shape.extend({
 		 ctx.lineTo(this.pointX, this.pointY);
 		 ctx.stroke();
 		 ctx.closePath();
+	},
+	updateMe: function(x, y){
+		this.pointX = x;
+		this.pointY = y;
+		this.draw();
 	}
+
 });
 
 var Arrow = Shape.extend({
 	pointX: 0,
 	pointY: 0,
-	
 	draw: function(){
-
 		ctx.beginPath();
 		ctx.strokeStyle = "#" + this.color; 
 		ctx.lineWidth = this.lineWidth; 
@@ -310,17 +246,20 @@ var Arrow = Shape.extend({
 		ctx.lineTo(this.pointX, this.pointY);
 		ctx.fill();
 		ctx.stroke();
-		ctx.closePath();
-		
+		ctx.closePath();	
+	},
+	updateMe: function(x, y){
+		this.pointX = x;
+		this.pointY = y;
+		this.draw();
 	}
+
 });
 
 var Arrow2 = Shape.extend({
 	pointX: 0,
 	pointY: 0,
-	
 	draw: function(){
-
 		ctx.beginPath();
 		ctx.strokeStyle = "#" + this.color; 
 		ctx.lineWidth = this.lineWidth; 
@@ -334,36 +273,14 @@ var Arrow2 = Shape.extend({
 		ctx.fill();
 		ctx.stroke();
 		ctx.closePath();
-		
+	},
+	updateMe: function(x, y){
+		this.pointX = x;
+		this.pointY = y;
+		this.draw();
 	}
 });
 
-var Text_Area = Shape.extend({
-	fontSize: 11,
-	fontName: "Verdana",
-	fontType: "",
-	inputText: "",
-	draw: function(){
-		ctx.fillStyle = "#" + this.color;
-		ctx.font = this.fontType+ " " + this.fontSize + "pt " + this.fontName;
-  		ctx.fillText(this.inputText, this.x, this.y);
-	}
-});
-
-var uploadImage = Shape.extend({
-	url: "",
-	draw: function(){
-		var ptr = this;
-		var img = new Image();
-        img.onload = function(){
-            ctx.drawImage(img, ptr.x, ptr.y); /**/
-        }
-        img.src = this.url;
-
-	}
-});
-
-/*WAAAAAYYY TOOOO SLOOOOOWWW */
 var Pen = Shape.extend({
 	pointX: 0,
 	pointY: 0,
@@ -373,15 +290,13 @@ var Pen = Shape.extend({
 		this.cords = [];
 	},
 	penDraw: function(){
-
 		ctx.lineJoin = ctx.lineCap = "round";
 		ctx.lineTo(this.pointX, this.pointY);
 		ctx.lineWidth = this.lineWidth;
 		ctx.strokeStyle = "#" + this.color; 
 		ctx.stroke();
-		ctx.clearRect(0, 0, el.width, el.height);
-		drawing.drawAllShapes();
-		 
+		ctx.clearRect(0, 0, el.width, el.height); 
+		drawing.drawAllShapes();			      
 	},
 	draw: function(){
 		ctx.beginPath();
@@ -394,10 +309,76 @@ var Pen = Shape.extend({
 			ctx.stroke();	
 		}
 		ctx.closePath();
+	},
+	updateMe: function(x, y){
+		this.cords.push(new Point(x, y)); 
+		this.pointX = x;
+		this.pointY = y;
+		this.penDraw();
+	}
+
+});
+
+var Text_Area = Shape.extend({
+	fontSize: 11,
+	fontName: "Verdana",
+	fontType: "",
+	inputText: "",
+	constructor: function(x, y, color, width){
+		this.fontSize = drawing.fontSize;
+		this.fontName = drawing.fontName;
+		this.fontType = drawing.fontType;
+		this.inputText = drawing.inputText;
+		this.base(x, y, color, width);
+		this.draw(); 
+
+	},
+	draw: function(){
+		ctx.fillStyle = "#" + this.color;
+		ctx.font = this.fontType+ " " + this.fontSize + "pt " + this.fontName;
+  		ctx.fillText(this.inputText, this.x, this.y);
 	}
 });
 
-/*Utility point*/
+var uploadImage = Shape.extend({
+	url: "",
+	img: null,
+	draw: function(){
+		console.log("drawing imageeee");
+		this.img.src = this.url;
+		ctx.drawImage(this.img, this.x, this.y);    
+	},
+	updateMe: function(link, pic){
+		this.url = link;
+		this.img = pic;
+	}
+});
+
+/**********************************************************/
+/*utility functions*/
+var shapeFactory = function(x, y){
+	if(drawing.currentTool === "square"){
+		return new Square(x, y, drawing.penColor, drawing.lineWidth);
+	} else if (drawing.currentTool === "pen"){
+		return new Pen(x, y, drawing.penColor, drawing.lineWidth);
+	} else if (drawing.currentTool === "eraser"){
+		return new Eraser(x, y, drawing.eraserColor, drawing.lineWidth);
+	} else if (drawing.currentTool === "text_area"){
+		drawing.inputText = prompt("Enter your text: ");
+		if(drawing.inputText !== null){
+			return new Text_Area(x, y, drawing.penColor, drawing.lineWidth);
+		} 
+	}else if(drawing.currentTool === "line"){
+		return new Line(x, y, drawing.penColor, drawing.lineWidth);
+	}else if(drawing.currentTool === "circle"){
+		return new Circle(x, y, drawing.penColor, drawing.lineWidth);
+	}else if(drawing.currentTool === "arrow2"){
+		return new Arrow2(x, y, drawing.penColor, drawing.lineWidth);
+	}else if(drawing.currentTool === "arrow"){
+		return new Arrow(x, y, drawing.penColor, drawing.lineWidth);
+	}
+}
+
 function Point(x, y){
 	this.x = x || 0;
 	this.y = y || 0; 
