@@ -5,7 +5,7 @@ var drawing = {
 	shapes: [],
 	cache: [],
 	lineWidth: 5,
-	idDrawing: false,
+	isDrawing: false,
 	currentTool: "pen",
 	penColor: "000000",
 	eraserColor: "ffffff",
@@ -14,6 +14,9 @@ var drawing = {
 	fontName: "Verdana",
 	fontType: "",
 	inputText: "",
+	moveMe: null,
+	isMoving: false,
+	//spliceIndex: -1,
 	drawAllShapes: function drawAll() {
 		for (var i = 0; i < drawing.shapes.length; i++) {
 			drawing.shapes[i].draw();
@@ -21,7 +24,18 @@ var drawing = {
 	},
 	currectObject: function(){
 		return drawing.shapes[drawing.shapes.length - 1];
+	},
+	getShapeForMovement: function(x, y){
+		var end = drawing.shapes.length - 1; //move layers of objects in correct order
+		for(var i = end; i >= 0 ; i--){
+			if(drawing.shapes[i].containsMouse(x, y)){
+				//drawing.spliceIndex = i;
+				return drawing.shapes[i];
+			}
+		}
+		return null; //not found
 	}
+
 }
 
 /**********************************************************/
@@ -113,14 +127,25 @@ $("#fileURL").change( function(e){
 $("#myCanvas").mousedown(function(e) {
 	var x = e.pageX - this.offsetLeft;
 	var y = e.pageY - this.offsetTop;
-	drawing.isDrawing = true;
-	var newShape = shapeFactory(x, y); 
-	drawing.shapes.push(newShape);
+
+	if(drawing.currentTool !== 'select'){
+		drawing.isDrawing = true;
+		var newShape = shapeFactory(x, y); 
+		drawing.shapes.push(newShape);
+	} else {
+		drawing.isMoving = true;
+		drawing.moveMe = drawing.getShapeForMovement(x, y);
+		//advanced undoo
+		//var clone = $.extend(true, {}, drawing.moveMe);
+		//drawing.shapes.splice(drawing.spliceIndex, 0, clone);
+		//console.log(">>>>>>>>>>>>>>>>." +drawing.shapes.length);
+	}
 
 });
 
 $("#myCanvas").mouseup(function(){
-	drawing.isDrawing = false;	
+	drawing.isDrawing = false;
+	drawing.isMoving = false; 	
 });
 
 $("#myCanvas").mousemove(function(e){
@@ -139,14 +164,13 @@ $("#myCanvas").mousemove(function(e){
 		if(!(drawing.currectObject() instanceof Pen)) ctx.clearRect(0, 0, el.width, el.height);
 		if(!(drawing.currectObject() instanceof Text_Area)) drawing.currectObject().updateMe(x, y); 
 		if(!(drawing.currectObject() instanceof Pen)) drawing.drawAllShapes();
+	} else if (drawing.isMoving){
+		if(drawing.moveMe !== null){
+			ctx.clearRect(0, 0, el.width, el.height);
+			drawing.moveMe.dragMe(x, y, drawing.lineWidth, drawing.penColor);
+			drawing.drawAllShapes();
+		}
 	}
-
-	/*UNCOMMENT THIS IF YOU WORK WITH MOVING THE OBJECT
-	  BE CAREFUL CAN CRASH THE PROGRAM, THIS IS ONLY FOR DEBUGGING
-	if(drawing.currentTool === 'select'){
-		if(drawing.currectObject().containsMouse(x, y)) console.log("we are inside a particular shape");
-	}
-	*/
 
 });
 
@@ -162,6 +186,7 @@ var Shape = Base.extend({
 	},
 	draw: function(context){
 		// The base version shouldn’t really do anything...
+		// intentionally empty
 	}
 });
 
@@ -184,6 +209,10 @@ var Square = Shape.extend({
 	containsMouse: function(x, y){ //boolean
 		 //TODO: implement 
 		 //http://www.emanueleferonato.com/2012/03/09/algorithm-to-determine-if-a-point-is-inside-a-square-with-mathematics-no-hit-test-involved/
+		 return false; 
+	},
+	dragMe: function(x, y, w, c){
+		//TODO: implement
 	}
 });
 
@@ -203,6 +232,9 @@ var Eraser = Shape.extend({
 	},
 	containsMouse: function(x, y){ //you are not allowed to move an Eraser! 
 		 return false; 
+	},
+	dragMe: function(x, y, w, c){
+		//intentionally empty
 	}
 });
 
@@ -226,6 +258,13 @@ var Circle = Shape.extend({
 		var dist = Math.sqrt( Math.pow(Math.abs(this.x - x), 2) + Math.pow(Math.abs(this.y - y), 2) );
 		if(dist <= this.radius) return true;
 		else return false; 
+	},
+	dragMe: function(x, y, w, c){
+		this.x = x; 
+		this.y = y;
+		this.lineWidth = w;
+		this.color = c;   
+		this.draw(); 
 	}	
 });
 
@@ -249,6 +288,9 @@ var Line = Shape.extend({
 	},
 	containsMouse: function(x, y){ //boolean
 		return checkIfLineContainsMouse(x, y, this.x, this.y, this.endX, this.endY); 
+	},
+	dragMe: function(x, y, w, c){
+		//TODO: implement
 	}
 
 });
@@ -278,6 +320,9 @@ var Arrow = Shape.extend({
 	},
 	containsMouse: function(x, y){ //boolean
 		return checkIfLineContainsMouse(x, y, this.x, this.y, this.pointX, this.pointY); 
+	},
+	dragMe: function(x, y, w, c){
+		//TODO: implement
 	}
 
 });
@@ -307,6 +352,9 @@ var Arrow2 = Shape.extend({
 	},
 	containsMouse: function(x, y){ //boolean 
 		return checkIfLineContainsMouse(x, y, this.x, this.y, this.pointX, this.pointY);
+	},
+	dragMe: function(x, y, w, c){
+		//TODO: implement
 	}
 });
 
@@ -353,6 +401,9 @@ var Pen = Shape.extend({
 		 	}
 		 }
 		 return flag; 
+	},
+	dragMe: function(x, y, w, c){
+		//TODO: implement
 	}
 
 });
@@ -378,6 +429,10 @@ var Text_Area = Shape.extend({
 	},
 	containsMouse: function(x, y){ //boolean
 		 //TODO: implement 
+		 return false;
+	},
+	dragMe: function(x, y){
+		//TODO: implement
 	}
 });
 
@@ -395,7 +450,11 @@ var uploadImage = Shape.extend({
 	},
 	containsMouse: function(x, y){ //boolean
 		//should add img.width and img.height and then use same method as with square
-		 //TODO: implement 
+		//TODO: implement
+		return false; 
+	},
+	dragMe: function(x, y){
+		//TODO: implement
 	}
 });
 
