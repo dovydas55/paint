@@ -291,6 +291,9 @@ var Line = Shape.extend({
 	},
 	dragMe: function(x, y, w, c){
 		//TODO: implement
+		this.lineWidth = w;
+		this.color = c;   
+		this.draw(); 
 	}
 
 });
@@ -323,6 +326,9 @@ var Arrow = Shape.extend({
 	},
 	dragMe: function(x, y, w, c){
 		//TODO: implement
+		this.lineWidth = w;
+		this.color = c;   
+		this.draw(); 
 	}
 
 });
@@ -355,6 +361,9 @@ var Arrow2 = Shape.extend({
 	},
 	dragMe: function(x, y, w, c){
 		//TODO: implement
+		this.lineWidth = w;
+		this.color = c;   
+		this.draw(); 
 	}
 });
 
@@ -404,6 +413,9 @@ var Pen = Shape.extend({
 	},
 	dragMe: function(x, y, w, c){
 		//TODO: implement
+		this.lineWidth = w;
+		this.color = c;   
+		this.draw(); 
 	}
 
 });
