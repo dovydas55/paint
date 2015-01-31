@@ -135,10 +135,8 @@ $("#myCanvas").mousedown(function(e) {
 	} else {
 		drawing.isMoving = true;
 		drawing.moveMe = drawing.getShapeForMovement(x, y);
-		//advanced undoo
-		//var clone = $.extend(true, {}, drawing.moveMe);
-		//drawing.shapes.splice(drawing.spliceIndex, 0, clone);
-		//console.log(">>>>>>>>>>>>>>>>." +drawing.shapes.length);
+		if(drawing.moveMe !== null)  drawing.moveMe.prevX = x; 
+		if(drawing.moveMe !== null) drawing.moveMe.prevY = y;
 	}
 
 });
@@ -156,6 +154,8 @@ $("#myCanvas").mousemove(function(e){
 	/*Styling mouse cursor*/
 	if(drawing.currentTool === "eraser"){
 		$(this).css( 'cursor', 'url(gfx/erase.png), auto' );
+	} else if (drawing.currentTool === "select"){
+		this.style.cursor = 'pointer';
 	} else {
 		$(this).css( 'cursor', 'url(gfx/mouseIcon.png), auto' );	
 	}
@@ -178,6 +178,8 @@ $("#myCanvas").mousemove(function(e){
 /**********************************************************/
 /*classes...*/
 var Shape = Base.extend({
+	prevX: 0,
+	prevY: 0,
 	constructor: function(x, y, color, width){
 		this.x = x; 
 		this.y = y; 
@@ -260,9 +262,8 @@ var Circle = Shape.extend({
 		else return false; 
 	},
 	dragMe: function(x, y, w, c){
-		this.x = x; 
-		this.y = y;
-		updateColorAndLineWidth(this, c, w);   
+		updateXandYcoordinatesForShape(this, x, y);
+		updateColorAndLineWidth(this, c, w); 
 		this.draw(); 
 	}	
 });
@@ -289,16 +290,16 @@ var Line = Shape.extend({
 		return checkIfLineContainsMouse(x, y, this.x, this.y, this.endX, this.endY); 
 	},
 	dragMe: function(x, y, w, c){
-		//TODO: implement
+		updateXandYcoordinatesForShape(this, x, y);
 		updateColorAndLineWidth(this, c, w);   
-		this.draw(); 
+		this.draw();
 	}
 
 });
 
 var Arrow = Shape.extend({
-	pointX: 0,
-	pointY: 0,
+	endX: 0,
+	endY: 0,
 	draw: function(){
 		ctx.beginPath();
 		ctx.strokeStyle = "#" + this.color; 
@@ -306,24 +307,24 @@ var Arrow = Shape.extend({
 		ctx.fillStyle = "#" + this.color;
 
 		ctx.moveTo(this.x, this.y);
-		ctx.lineTo(this.pointX, this.pointY);
-		ctx.lineTo(this.pointX-25, this.pointY-25);
-		ctx.arcTo(this.pointX, this.pointY, this.pointX-25, this.pointY+25, 35);
-		ctx.lineTo(this.pointX, this.pointY);
+		ctx.lineTo(this.endX, this.endY);
+		ctx.lineTo(this.endX-25, this.endY-25);
+		ctx.arcTo(this.endX, this.endY, this.endX-25, this.endY+25, 35);
+		ctx.lineTo(this.endX, this.endY);
 		ctx.fill();
 		ctx.stroke();
 		ctx.closePath();	
 	},
 	updateMe: function(x, y){
-		this.pointX = x;
-		this.pointY = y;
+		this.endX = x;
+		this.endY = y;
 		this.draw();
 	},
 	containsMouse: function(x, y){ //boolean
-		return checkIfLineContainsMouse(x, y, this.x, this.y, this.pointX, this.pointY); 
+		return checkIfLineContainsMouse(x, y, this.x, this.y, this.endX, this.endY); 
 	},
 	dragMe: function(x, y, w, c){
-		//TODO: implement
+		updateXandYcoordinatesForShape(this, x, y);
 		updateColorAndLineWidth(this, c, w);   
 		this.draw(); 
 	}
@@ -331,8 +332,8 @@ var Arrow = Shape.extend({
 });
 
 var Arrow2 = Shape.extend({
-	pointX: 0,
-	pointY: 0,
+	endX: 0,
+	endY: 0,
 	draw: function(){
 		ctx.beginPath();
 		ctx.strokeStyle = "#" + this.color; 
@@ -340,26 +341,26 @@ var Arrow2 = Shape.extend({
 		ctx.fillStyle = "#" + this.color;
 
 		ctx.moveTo(this.x, this.y);
-		ctx.lineTo(this.pointX, this.pointY);
-		ctx.lineTo(this.pointX+25, this.pointY+25);
-		ctx.arcTo(this.pointX, this.pointY, this.pointX+25, this.pointY-25, 35);
-		ctx.lineTo(this.pointX, this.pointY);
+		ctx.lineTo(this.endX, this.endY);
+		ctx.lineTo(this.endX+25, this.endY+25);
+		ctx.arcTo(this.endX, this.endY, this.endX+25, this.endY-25, 35);
+		ctx.lineTo(this.endX, this.endY);
 		ctx.fill();
 		ctx.stroke();
 		ctx.closePath();
 	},
 	updateMe: function(x, y){
-		this.pointX = x;
-		this.pointY = y;
+		this.endX = x;
+		this.endY = y;
 		this.draw();
 	},
 	containsMouse: function(x, y){ //boolean 
-		return checkIfLineContainsMouse(x, y, this.x, this.y, this.pointX, this.pointY);
+		return checkIfLineContainsMouse(x, y, this.x, this.y, this.endX, this.endY);
 	},
 	dragMe: function(x, y, w, c){
-		//TODO: implement
+		updateXandYcoordinatesForShape(this, x, y);
 		updateColorAndLineWidth(this, c, w);  
-		this.draw(); 
+		this.draw();  
 	}
 });
 
@@ -504,8 +505,8 @@ var distance = function(x1, y1, x2, y2){
 var checkIfLineContainsMouse = function(x,y, startX, startY, endX, endY){
 	var t1 = distance(startX, startY, x, y) + distance(endX, endY, x, y); 
 	var t2 = distance(startX, startY, endX, endY);
-	t2 = t2.toFixed(1); //add more tolerance by lowering precision. Maybe add to 0 for better user experience
-	t1 = t1.toFixed(1); //add more tolerance by lowering precision.
+	t2 = t2.toFixed(0); //add more tolerance by lowering precision. Maybe add to 0 for better user experience
+	t1 = t1.toFixed(0); //add more tolerance by lowering precision.
 	if(t1 === t2) return true; 
 	else return false; 
 }
@@ -513,4 +514,17 @@ var checkIfLineContainsMouse = function(x,y, startX, startY, endX, endY){
 var updateColorAndLineWidth = function(obj, c, w){
 	obj.lineWidth = w;
 	obj.color = c; 
+}
+
+var updateXandYcoordinatesForShape = function(obj, x, y){
+	var tmpX = x - obj.prevX; 
+	var tmpY = y - obj.prevY;
+	obj.prevX = x;
+	obj.prevY = y;
+	obj.x += tmpX; 
+	obj.y += tmpY;
+	//extension for line, arrow and arrow2
+	if(obj instanceof Line || obj instanceof Arrow || obj instanceof Arrow2) obj.endX += tmpX; 
+	if(obj instanceof Line || obj instanceof Arrow || obj instanceof Arrow2) obj.endY += tmpY;
+
 }
