@@ -402,17 +402,29 @@ var Pen = Shape.extend({
 		this.pointY = y;
 		this.penDraw();
 	},
-	containsMouse: function(x, y){ /*Not sure if this works properly!! TODO: debug*/
+	containsMouse: function(x, y){ 
 		 var flag = false;
-		 for(var i = 0; i < this.cords.length; i++){
-		 	if(this.cords[i].x === x && this.cords[i].y === y){
-		 		flag = true;
+		 for(var i = 0; i < this.cords.length; i++){ //range search so it would be easier for users to select the pixel 
+		 	if(this.cords[i].x > x - 15 && this.cords[i].x < x + 15 && this.cords[i].y > y - 15 && this.cords[i].y < y + 15){ 
+		 		flag = true;								
 		 	}
 		 }
 		 return flag; 
 	},
 	dragMe: function(x, y){
-		//TODO: implement   
+		
+		var tmpX = x - this.prevX; 
+		var tmpY = y - this.prevY;
+		this.prevX = x;
+		this.prevY = y;
+
+		this.x += tmpX;
+		this.y += tmpY; 
+		for(var i = 0; i < this.cords.length; i++){
+			this.cords[i].x += tmpX;
+			this.cords[i].y += tmpY;
+		}
+
 		this.draw(); 
 	}
 
@@ -452,7 +464,6 @@ var uploadImage = Shape.extend({
 	width: 0,
 	height: 0,
 	draw: function(){
-		console.log("drawing imageeee");
 		this.img.src = this.url;
 		ctx.drawImage(this.img, this.x, this.y);    
 	},
@@ -520,6 +531,7 @@ var updateColorAndLineWidth = function(obj, c, w){
 }
 
 var updateXandYcoordinatesForShape = function(obj, x, y){
+	//for circle, square objects
 	var tmpX = x - obj.prevX; 
 	var tmpY = y - obj.prevY;
 	obj.prevX = x;
