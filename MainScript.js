@@ -25,7 +25,7 @@ var drawing = {
 	currectObject: function(){
 		return drawing.shapes[drawing.shapes.length - 1];
 	},
-	getShapeForMovement: function(x, y){
+	getShape: function(x, y){
 		var end = drawing.shapes.length - 1; //move layers of objects in correct order
 		for(var i = end; i >= 0 ; i--){
 			if(drawing.shapes[i].containsMouse(x, y)){
@@ -112,10 +112,12 @@ $("#fileURL").change( function(e){
         var img = new Image();
         img.onload = function(){
             ctx.drawImage(img,10,10); //always spawn new images at 10,10
+            drawing.shapes.push(new uploadImage(10, 10, "null", "null")); 
+       		drawing.currectObject().width = img.width;
+        	drawing.currectObject().height = img.height;
+        	drawing.currectObject().updateMe(getUrl, img);
         }
         var getUrl = event.target.result;
-        drawing.shapes.push(new uploadImage(10, 10, "null", "null"));
-        drawing.currectObject().updateMe(getUrl, img);
         img.src = getUrl;
     }
     reader.readAsDataURL(e.target.files[0]);   
@@ -128,13 +130,20 @@ $("#myCanvas").mousedown(function(e) {
 	var x = e.pageX - this.offsetLeft;
 	var y = e.pageY - this.offsetTop;
 
-	if(drawing.currentTool !== 'select'){
+	if(drawing.currentTool !== 'select' && drawing.currentTool !== 'fill'){
 		drawing.isDrawing = true;
 		var newShape = shapeFactory(x, y); 
 		drawing.shapes.push(newShape);
+	} else if (drawing.currentTool === 'fill'){
+		var upateLineWAndC = drawing.getShape(x, y);
+		if(upateLineWAndC !== null){
+			updateColorAndLineWidth(upateLineWAndC, drawing.penColor, drawing.lineWidth);
+			ctx.clearRect(0, 0, el.width, el.height);
+			drawing.drawAllShapes();
+		}
 	} else {
 		drawing.isMoving = true;
-		drawing.moveMe = drawing.getShapeForMovement(x, y);
+		drawing.moveMe = drawing.getShape(x, y);
 		if(drawing.moveMe !== null)  drawing.moveMe.prevX = x; 
 		if(drawing.moveMe !== null) drawing.moveMe.prevY = y;
 	}
@@ -167,7 +176,7 @@ $("#myCanvas").mousemove(function(e){
 	} else if (drawing.isMoving){
 		if(drawing.moveMe !== null){
 			ctx.clearRect(0, 0, el.width, el.height);
-			drawing.moveMe.dragMe(x, y, drawing.lineWidth, drawing.penColor);
+			drawing.moveMe.dragMe(x, y);
 			drawing.drawAllShapes();
 		}
 	}
@@ -205,16 +214,14 @@ var Square = Shape.extend({
 	updateMe: function(x, y){
 		this.width = x - this.x;
 		this.height = y - this.y;
-
 		this.draw();
 	},
-	containsMouse: function(x, y){ //boolean
-		 //TODO: implement 
-		 //http://www.emanueleferonato.com/2012/03/09/algorithm-to-determine-if-a-point-is-inside-a-square-with-mathematics-no-hit-test-involved/
-		 return false; 
+	containsMouse: function(clickX, clickY){ //boolean
+		return containPointSquareObject(this, clickX, clickY); 
 	},
-	dragMe: function(x, y, w, c){
-		//TODO: implement
+	dragMe: function(x, y){
+		updateXandYcoordinatesForShape(this, x, y); 
+		this.draw(); 
 	}
 });
 
@@ -235,7 +242,7 @@ var Eraser = Shape.extend({
 	containsMouse: function(x, y){ //you are not allowed to move an Eraser! 
 		 return false; 
 	},
-	dragMe: function(x, y, w, c){
+	dragMe: function(x, y){
 		//intentionally empty
 	}
 });
@@ -261,9 +268,8 @@ var Circle = Shape.extend({
 		if(dist <= this.radius) return true;
 		else return false; 
 	},
-	dragMe: function(x, y, w, c){
-		updateXandYcoordinatesForShape(this, x, y);
-		updateColorAndLineWidth(this, c, w); 
+	dragMe: function(x, y){
+		updateXandYcoordinatesForShape(this, x, y); 
 		this.draw(); 
 	}	
 });
@@ -289,9 +295,8 @@ var Line = Shape.extend({
 	containsMouse: function(x, y){ //boolean
 		return checkIfLineContainsMouse(x, y, this.x, this.y, this.endX, this.endY); 
 	},
-	dragMe: function(x, y, w, c){
-		updateXandYcoordinatesForShape(this, x, y);
-		updateColorAndLineWidth(this, c, w);   
+	dragMe: function(x, y){
+		updateXandYcoordinatesForShape(this, x, y);   
 		this.draw();
 	}
 
@@ -323,9 +328,8 @@ var Arrow = Shape.extend({
 	containsMouse: function(x, y){ //boolean
 		return checkIfLineContainsMouse(x, y, this.x, this.y, this.endX, this.endY); 
 	},
-	dragMe: function(x, y, w, c){
-		updateXandYcoordinatesForShape(this, x, y);
-		updateColorAndLineWidth(this, c, w);   
+	dragMe: function(x, y){
+		updateXandYcoordinatesForShape(this, x, y);   
 		this.draw(); 
 	}
 
@@ -357,9 +361,8 @@ var Arrow2 = Shape.extend({
 	containsMouse: function(x, y){ //boolean 
 		return checkIfLineContainsMouse(x, y, this.x, this.y, this.endX, this.endY);
 	},
-	dragMe: function(x, y, w, c){
-		updateXandYcoordinatesForShape(this, x, y);
-		updateColorAndLineWidth(this, c, w);  
+	dragMe: function(x, y){
+		updateXandYcoordinatesForShape(this, x, y);  
 		this.draw();  
 	}
 });
@@ -408,9 +411,8 @@ var Pen = Shape.extend({
 		 }
 		 return flag; 
 	},
-	dragMe: function(x, y, w, c){
-		//TODO: implement
-		updateColorAndLineWidth(this, c, w);   
+	dragMe: function(x, y){
+		//TODO: implement   
 		this.draw(); 
 	}
 
@@ -447,6 +449,8 @@ var Text_Area = Shape.extend({
 var uploadImage = Shape.extend({
 	url: "",
 	img: null,
+	width: 0,
+	height: 0,
 	draw: function(){
 		console.log("drawing imageeee");
 		this.img.src = this.url;
@@ -457,12 +461,11 @@ var uploadImage = Shape.extend({
 		this.img = pic;
 	},
 	containsMouse: function(x, y){ //boolean
-		//should add img.width and img.height and then use same method as with square
-		//TODO: implement
-		return false; 
+		return containPointSquareObject(this, x, y);
 	},
 	dragMe: function(x, y){
-		//TODO: implement
+		updateXandYcoordinatesForShape(this, x, y);
+		this.draw();
 	}
 });
 
@@ -526,5 +529,30 @@ var updateXandYcoordinatesForShape = function(obj, x, y){
 	//extension for line, arrow and arrow2
 	if(obj instanceof Line || obj instanceof Arrow || obj instanceof Arrow2) obj.endX += tmpX; 
 	if(obj instanceof Line || obj instanceof Arrow || obj instanceof Arrow2) obj.endY += tmpY;
+}
+
+var containPointSquareObject = function(obj, clickX, clickY){
+	var flag = false; 
+	var endX = obj.x + obj.width;
+	var endY = obj.y + obj.height; 
+
+	if(obj.x < endX && obj.y < endY){ //case 1
+		if(obj.x <= clickX && clickX <= endX && obj.y <= clickY && clickY <= endY) {
+			flag = true;
+		}
+	} else if(obj.x < endX && obj.y > endY){ //case 2
+		if(obj.x <= clickX && clickX <= endX && obj.y >= clickY && clickY >= endY){
+			flag = true; 
+		}
+	} else if(obj.x > endX && obj.y < endY){ //case 3
+		if(obj.x >= clickX && clickX >= endX && obj.y <= clickY && clickY <= endY)
+			flag = true;
+	} else if(obj.x > endX && obj.y > endY){
+		if(obj.x >= clickX && clickX >= endX && obj.y >= clickY && clickY >= endY){
+			flag = true;
+		}
+	}
+
+	return flag;
 
 }
