@@ -27,6 +27,7 @@
     <script type="text/javascript" src="SOLUTION/mouseOps.js" async></script>
     <script type="text/javascript" src="SOLUTION/utilities.js" ></script>
     <script type="text/javascript" src="SOLUTION/userInput.js" async></script>
+    <script type="text/javascript" src="SOLUTION/webService.js" async></script>
     <script type="text/javascript" src="js/Base.js"></script>
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -40,12 +41,20 @@
         <ul id="menu">
           <li></li>
           <li><a href="#" id="newFile">New</a></li>
-          <li><a href="#">Save</a></li>
+          <li><a href="#" class="button" id="upload">Upload</a></li>
+          <li><a href="#" class="button" id="save">Save</a></li>
+          <li><a href="#" class="button" id="download" download="canvas.png">Download</a></li>
         </ul>
         <ul id="action">
           <li><a title="Undo" data-undochoice="undo" class="testLink" href="#"> <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"> </span> </a></li>
           <li><a title="Redo" data-undochoice="redo" class="testLink" href="#"> <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"> </span> </a> </li>
         </ul>
+      </div>
+
+       <div id="listBoxContainer">
+        <select id="sltbox">
+          <option selected="selected">Choose File</option>
+        </select> 
       </div>
 
       <div id="canvasContainer">      
@@ -88,6 +97,7 @@
           <tr>
             <td> <a data-tool="pen" class="toolLink" title="Pen" href="#"> <img class="pic" src="gfx/Pencil-icon32.png" alt=""></a></td>
             <td> <a data-tool="eraser" class="toolLink" title="Eraser" href="#"> <img class="pic" src="gfx/Eraser-icon.png" alt=""></a></td>
+            <td> <a data-tool="edit" class="toolLink" title="Edit" href="#"> <img class="pic" src="gfx/edit.png" alt=""></a></td>
             <td> <a data-tool="circle" class="toolLink" title="Circle" href="#"> <img class="pic" src="gfx/circle-icon.png" alt=""></a></td>
             <td> <a data-tool="square" class="toolLink" title="Square" href="#"> <img class="pic" src="gfx/square-icon.png" alt=""></a></td>
             <td> <a data-tool="select" class="toolLink" title="Select" href="#"> <img class="pic" src="gfx/move-icon.png" alt=""></a></td>

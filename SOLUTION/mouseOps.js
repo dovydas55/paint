@@ -3,7 +3,7 @@ $("#myCanvas").mousedown(function(e) {
 	var x = e.pageX - this.offsetLeft;
 	var y = e.pageY - this.offsetTop;
 
-	if(drawing.currentTool !== 'select' && drawing.currentTool !== 'fill'){
+	if(drawing.currentTool !== 'select' && drawing.currentTool !== 'fill' && drawing.currentTool !== 'edit'){
 		drawing.isDrawing = true;
 		var newShape = shapeFactory(x, y); 
 		drawing.shapes.push(newShape);
@@ -14,7 +14,14 @@ $("#myCanvas").mousedown(function(e) {
 			ctx.clearRect(0, 0, el.width, el.height);
 			drawing.drawAllShapes();
 		}
-	} else {
+	}else if (drawing.currentTool === 'edit'){
+		var obj = drawing.getShape(x,y);
+		if(obj !== null){
+			updateTextProperties(obj, drawing.fontSize, drawing.fontName, drawing.fontType); 
+			ctx.clearRect(0, 0, el.width, el.height);
+			drawing.drawAllShapes();	
+		}
+	}else {
 		drawing.isMoving = true;
 		drawing.moveMe = drawing.getShape(x, y);
 		if(drawing.moveMe !== null)  drawing.moveMe.prevX = x; 
@@ -36,9 +43,10 @@ $("#myCanvas").mousemove(function(e){
 	/*Styling mouse cursor*/
 	if(drawing.currentTool === "eraser"){
 		$(this).css( 'cursor', 'url(gfx/erase.png), auto' );
-	} else if (drawing.currentTool === "select"){
+	} else if (drawing.currentTool === "select" || drawing.currentTool === "circle" || drawing.currentTool === "square" || drawing.currentTool === "line"
+	|| drawing.currentTool === "arrow" || drawing.currentTool === "arrow2" || drawing.currentTool === "text_area" || drawing.currentTool === "fill" || drawing.currentTool === "edit"){
 		this.style.cursor = 'pointer';
-	} else {
+	}else {
 		$(this).css( 'cursor', 'url(gfx/mouseIcon.png), auto' );	
 	}
 

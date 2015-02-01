@@ -1,24 +1,25 @@
 /*utility functions*/
 var shapeFactory = function(x, y){
 	if(drawing.currentTool === "square"){
-		return new Square(x, y, drawing.penColor, drawing.lineWidth);
+		return new Square(x, y, drawing.penColor, drawing.lineWidth, "square");
 	} else if (drawing.currentTool === "pen"){
-		return new Pen(x, y, drawing.penColor, drawing.lineWidth);
+		return new Pen(x, y, drawing.penColor, drawing.lineWidth, "pen");
 	} else if (drawing.currentTool === "eraser"){
-		return new Eraser(x, y, drawing.eraserColor, drawing.lineWidth);
+		return new Eraser(x, y, drawing.eraserColor, drawing.lineWidth, "eraser");
 	} else if (drawing.currentTool === "text_area"){
 		drawing.inputText = prompt("Enter your text: ");
+
 		if(drawing.inputText !== null){
-			return new Text_Area(x, y, drawing.penColor, drawing.lineWidth);
+			return new Text_Area(x, y, drawing.penColor, drawing.lineWidth, "text_area");
 		} 
 	}else if(drawing.currentTool === "line"){
-		return new Line(x, y, drawing.penColor, drawing.lineWidth);
+		return new Line(x, y, drawing.penColor, drawing.lineWidth, "line");
 	}else if(drawing.currentTool === "circle"){
-		return new Circle(x, y, drawing.penColor, drawing.lineWidth);
+		return new Circle(x, y, drawing.penColor, drawing.lineWidth, "circle");
 	}else if(drawing.currentTool === "arrow2"){
-		return new Arrow2(x, y, drawing.penColor, drawing.lineWidth);
+		return new Arrow2(x, y, drawing.penColor, drawing.lineWidth, "arrow2");
 	}else if(drawing.currentTool === "arrow"){
-		return new Arrow(x, y, drawing.penColor, drawing.lineWidth);
+		return new Arrow(x, y, drawing.penColor, drawing.lineWidth, "arrow");
 	}
 }
 
@@ -84,4 +85,10 @@ var containPointSquareObject = function(obj, clickX, clickY){
 
 	return flag;
 
+}
+
+var updateTextProperties = function (obj, newFontSize, newFontName, newFontType){
+	obj.fontSize = newFontSize;
+	obj.fontName = newFontName;
+	obj.fontType = newFontType;
 }

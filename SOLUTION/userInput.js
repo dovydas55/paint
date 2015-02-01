@@ -118,3 +118,17 @@ $("#fileURL").change( function(e){
     }
     reader.readAsDataURL(e.target.files[0]);   
 });
+
+//Download Canvas as Picture
+
+$("#download").click(function(){
+	 var dataURL = el.toDataURL();
+	 document.getElementById('download').src = dataURL;
+
+});
+
+var button = document.getElementById('download');
+button.addEventListener('click', function (e) {
+    var dataURL = el.toDataURL('image/png');
+    button.href = dataURL;
+});

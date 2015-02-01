@@ -5,11 +5,12 @@ var ctx = el.getContext("2d");
 var Shape = Base.extend({
 	prevX: 0,
 	prevY: 0,
-	constructor: function(x, y, color, width){
+	constructor: function(x, y, color, width, name){
 		this.x = x; 
 		this.y = y; 
 		this.color = color;
 		this.lineWidth = width;
+		this.name = name;
 	},
 	draw: function(context){
 		// The base version shouldn’t really do anything...
@@ -190,6 +191,7 @@ var Pen = Shape.extend({
 		ctx.moveTo(x, y);
 		this.base(x, y, color, width);
 		this.cords = [];
+
 	},
 	penDraw: function(){
 		ctx.lineJoin = ctx.lineCap = "round";
@@ -251,13 +253,17 @@ var Text_Area = Shape.extend({
 	fontName: "Verdana",
 	fontType: "",
 	inputText: "",
+	//name: "text_area",
+	width: 0,
+	height: 0,
 	constructor: function(x, y, color, width){
 		this.fontSize = drawing.fontSize;
 		this.fontName = drawing.fontName;
 		this.fontType = drawing.fontType;
 		this.inputText = drawing.inputText;
 		this.base(x, y, color, width);
-		this.draw(); 
+		this.draw();
+		this.name = "text_area"; 
 
 	},
 	draw: function(){
@@ -266,11 +272,13 @@ var Text_Area = Shape.extend({
   		ctx.fillText(this.inputText, this.x, this.y);
 	},
 	containsMouse: function(x, y){ //boolean
-		 //TODO: implement 
-		 return false;
+		 this.width = this.inputText.length * this.fontSize;
+		 this.height = -this.fontSize;
+		 return containPointSquareObject(this, x, y);
 	},
 	dragMe: function(x, y){
-		//TODO: implement
+		updateXandYcoordinatesForShape(this, x, y);
+		this.draw();
 	}
 });
 
