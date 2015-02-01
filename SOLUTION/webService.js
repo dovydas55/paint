@@ -77,7 +77,7 @@ $("#upload").click(function(){
 $(document).ready(function(){
 	$('#sltbox').on('change', function(){
 	var boardID = this.value;
-	var param2 = { "user": "dovydas13",
+	var param2 = { "user": "telma13",
 					"id": boardID,
 	};
 
@@ -101,11 +101,11 @@ $(document).ready(function(){
 							drawing.shapes.push(new Square(tester[i].x, tester[i].y, tester[i].color, tester[i].lineWidth, "square"));
 							drawing.currectObject().width = tester[i].width;
 							drawing.currectObject().height = tester[i].height;
-							drawing.currectObject().fillColor = tester[i].fillColor;
+							//drawing.currectObject().fillColor = tester[i].fillColor;
 						}else if(tester[i].name === "circle"){
 							drawing.shapes.push(new Circle(tester[i].x, tester[i].y, tester[i].color, tester[i].lineWidth, "circle"));
 							drawing.currectObject().radius = tester[i].radius;
-							drawing.currectObject().fillColor = tester[i].fillColor;
+							//drawing.currectObject().fillColor = tester[i].fillColor;
 						}else if(tester[i].name === "line" ){
 							drawing.shapes.push(new Line(tester[i].x, tester[i].y, tester[i].color, tester[i].lineWidth, "line"));
 							drawing.currectObject().endX = tester[i].endX;
@@ -118,13 +118,7 @@ $(document).ready(function(){
 							drawing.shapes.push(new Arrow2(tester[i].x, tester[i].y, tester[i].color, tester[i].lineWidth, "arrow2"));
 							drawing.currectObject().endX = tester[i].endX;
 							drawing.currectObject().endY = tester[i].endY;
-						}/*else if(tester[i].cords !== null ){
-							drawing.shapes.push(new Pen(tester[i].x, tester[i].y, tester[i].color, tester[i].lineWidth));
-							drawing.currectObject().endX = tester[i].endX;
-							drawing.currectObject().endY = tester[i].endY;
-							drawing.currectObject().cords = tester[i].cords;
-
-						}*/else if(tester[i].name === "text_area"){
+						}else if(tester[i].name === "text_area"){
 							drawing.shapes.push(new Text_Area(tester[i].x, tester[i].y, tester[i].color, tester[i].lineWidth, "text_area"));
 							drawing.currectObject().fontSize = tester[i].fontSize;
 							drawing.currectObject().fontName = tester[i].fontName;
@@ -137,10 +131,12 @@ $(document).ready(function(){
 							drawing.currectObject().height = tester[i].height;
 						
 							
-						}else if(tester[i].name === "image"){
-							drawing.shapes.push(new Image(10, 10, null, null));
-							drawing.currectObject().url = tester[i].url;
-							drawing.currectObject().img = tester[i].img;
+						}else if(tester[i].cords !== null ){
+							drawing.shapes.push(new Pen(tester[i].x, tester[i].y, tester[i].color, tester[i].lineWidth));
+							drawing.currectObject().endX = tester[i].endX;
+							drawing.currectObject().endY = tester[i].endY;
+							drawing.currectObject().cords = tester[i].cords;
+
 						}
 						drawing.drawAllShapes();
 					}
