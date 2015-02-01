@@ -24,9 +24,13 @@ $("#myCanvas").mousedown(function(e) {
 			cleanCanvas();
 		}
 	}else if(drawing.currentTool !== 'select'){
+
+		drawing.textBoxX = e.pageX;
+		drawing.textBoxY = e.pageY;
 		drawing.isDrawing = true;
 		var newShape = shapeFactory(x, y); 
-		drawing.shapes.push(newShape);
+		drawing.shapes.push(newShape);		
+
 	} else {
 		drawing.isMoving = true;
 		drawing.moveMe = drawing.getShape(x, y);
@@ -49,11 +53,13 @@ $("#myCanvas").mousemove(function(e){
 	/*Styling mouse cursor*/
 	if(drawing.currentTool === "eraser"){
 		$(this).css( 'cursor', 'url(gfx/erase.png), auto' );
-	} else if (drawing.currentTool === "select" || drawing.currentTool === "circle" || drawing.currentTool === "square" || drawing.currentTool === "line"
-	|| drawing.currentTool === "arrow" || drawing.currentTool === "arrow2" || drawing.currentTool === "text_area" || drawing.currentTool === "fill" || drawing.currentTool === "edit"){
-		this.style.cursor = 'pointer';
-	}else {
+	} else if (drawing.currentTool === "pen"){
 		$(this).css( 'cursor', 'url(gfx/mouseIcon.png), auto' );	
+	}else if (drawing.currentTool === "fill"){
+		$(this).css( 'cursor', 'url(gfx/Actions-fill-color-icon2.png), auto');
+
+	} else {
+		this.style.cursor = 'pointer';
 	}
 
 	if(drawing.isDrawing){

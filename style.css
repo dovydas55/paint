@@ -219,6 +219,19 @@ a:active {
 	float:right;
 }
 
+#textcontainer { 
+    position: absolute;
+    height: 50px;
+    width: 400px;
+    display: none;
+    z-index: 99;
+}
+
+#textInput{
+	font-size: 20pt;
+	height: 50px;
+    width: 300px;
+}
 
 
 

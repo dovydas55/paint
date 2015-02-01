@@ -267,20 +267,18 @@ var Pen = Shape.extend({
 });
 
 var Text_Area = Shape.extend({
-	fontSize: 11,
-	fontName: "Verdana",
-	fontType: "",
-	inputText: "",
-	//name: "text_area",
+	//fontSize: 11,
+	//fontName: "Verdana",
+	//fontType: "",
+	//inputText: "",
 	width: 0,
 	height: 0,
-	constructor: function(x, y, color, width){
+	constructor: function(x, y, color, width, name){
+		this.base(x, y, color, width);
 		this.fontSize = drawing.fontSize;
 		this.fontName = drawing.fontName;
 		this.fontType = drawing.fontType;
 		this.inputText = drawing.inputText;
-		this.base(x, y, color, width);
-		this.draw();
 		this.name = "text_area"; 
 
 	},
@@ -296,6 +294,10 @@ var Text_Area = Shape.extend({
 	},
 	dragMe: function(x, y){
 		updateXandYcoordinatesForShape(this, x, y);
+		this.draw();
+	},
+	updateText: function(text){
+		this.inputText = text;
 		this.draw();
 	}
 });

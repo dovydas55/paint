@@ -101,9 +101,11 @@ $(document).ready(function(){
 							drawing.shapes.push(new Square(tester[i].x, tester[i].y, tester[i].color, tester[i].lineWidth, "square"));
 							drawing.currectObject().width = tester[i].width;
 							drawing.currectObject().height = tester[i].height;
+							drawing.currectObject().fillColor = tester[i].fillColor;
 						}else if(tester[i].name === "circle"){
 							drawing.shapes.push(new Circle(tester[i].x, tester[i].y, tester[i].color, tester[i].lineWidth, "circle"));
 							drawing.currectObject().radius = tester[i].radius;
+							drawing.currectObject().fillColor = tester[i].fillColor;
 						}else if(tester[i].name === "line" ){
 							drawing.shapes.push(new Line(tester[i].x, tester[i].y, tester[i].color, tester[i].lineWidth, "line"));
 							drawing.currectObject().endX = tester[i].endX;

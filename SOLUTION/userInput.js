@@ -14,7 +14,8 @@ var drawing = {
 	inputText: "",
 	moveMe: null,
 	isMoving: false,
-	//spliceIndex: -1,
+	textBoxX: 0,
+	textBoxY: 0,
 	drawAllShapes: function drawAll() {
 		for (var i = 0; i < drawing.shapes.length; i++) {
 			drawing.shapes[i].draw();
@@ -27,7 +28,6 @@ var drawing = {
 		var end = drawing.shapes.length - 1; //move layers of objects in correct order
 		for(var i = end; i >= 0 ; i--){
 			if(drawing.shapes[i].containsMouse(x, y)){
-				//drawing.spliceIndex = i;
 				return drawing.shapes[i];
 			}
 		}
@@ -125,6 +125,17 @@ $("#download").click(function(){
 	 var dataURL = el.toDataURL();
 	 document.getElementById('download').src = dataURL;
 
+});
+
+//getting user to input a string
+$('#textInput').keyup(function(e){
+	if(e.which === 13){
+		drawing.inputText = $('#textInput').val();
+		console.log(drawing.inputText);
+		drawing.currectObject().updateText(drawing.inputText);
+		$('#textcontainer').hide();
+		$('#textInput').val("");
+	}
 });
 
 var button = document.getElementById('download');

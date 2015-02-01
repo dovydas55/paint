@@ -7,11 +7,11 @@ var shapeFactory = function(x, y){
 	} else if (drawing.currentTool === "eraser"){
 		return new Eraser(x, y, drawing.eraserColor, drawing.lineWidth, "eraser");
 	} else if (drawing.currentTool === "text_area"){
-		drawing.inputText = prompt("Enter your text: ");
-
-		if(drawing.inputText !== null){
-			return new Text_Area(x, y, drawing.penColor, drawing.lineWidth, "text_area");
-		} 
+		
+		//drawing.inputText = prompt("Enter your text: ");
+		$('#textcontainer').css({"top": drawing.textBoxY, "left": drawing.textBoxX}).show();
+		return new Text_Area(x, y, drawing.penColor, drawing.lineWidth, "text_area");
+		 
 	}else if(drawing.currentTool === "line"){
 		return new Line(x, y, drawing.penColor, drawing.lineWidth, "line");
 	}else if(drawing.currentTool === "circle"){
