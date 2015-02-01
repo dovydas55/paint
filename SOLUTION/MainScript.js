@@ -21,10 +21,16 @@ var Shape = Base.extend({
 var Square = Shape.extend({
 	width: 0,
 	height: 0,
+	fillColor: "init",
  	draw: function(){
 		 ctx.beginPath();
 		 ctx.lineWidth = this.lineWidth;
 		 ctx.strokeStyle = "#" + this.color;
+
+		 if(this.fillColor !== "init"){
+		 	ctx.fillStyle = "#" + this.fillColor;
+		 	ctx.fillRect(this.x, this.y, this.width, this.height);	
+		 }
 		 ctx.strokeRect(this.x, this.y, this.width, this.height);
 		 ctx.closePath();
 	},
@@ -39,6 +45,10 @@ var Square = Shape.extend({
 	dragMe: function(x, y){
 		updateXandYcoordinatesForShape(this, x, y); 
 		this.draw(); 
+	},
+	updateFillColor: function(color){
+		console.log("square"); 
+		this.fillColor = color;
 	}
 });
 
@@ -66,11 +76,16 @@ var Eraser = Shape.extend({
 
 var Circle = Shape.extend({
 	radius: 0,
+	fillColor: "init",
 	draw: function(){
 		ctx.beginPath();
 		ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false ); 
 		ctx.lineWidth = this.lineWidth; 
 		ctx.strokeStyle = "#" + this.color;
+		if(this.fillColor !== "init"){
+			ctx.fillStyle = "#" + this.fillColor;
+			ctx.fill();
+		}
 		ctx.stroke( );
 		ctx.closePath();
 	},
@@ -88,7 +103,10 @@ var Circle = Shape.extend({
 	dragMe: function(x, y){
 		updateXandYcoordinatesForShape(this, x, y); 
 		this.draw(); 
-	}	
+	},
+	updateFillColor: function(color){
+		this.fillColor = color;
+	}
 });
 
 
@@ -303,4 +321,6 @@ var uploadImage = Shape.extend({
 		this.draw();
 	}
 });
+
+
 

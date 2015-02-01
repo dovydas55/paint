@@ -3,25 +3,31 @@ $("#myCanvas").mousedown(function(e) {
 	var x = e.pageX - this.offsetLeft;
 	var y = e.pageY - this.offsetTop;
 
-	if(drawing.currentTool !== 'select' && drawing.currentTool !== 'fill' && drawing.currentTool !== 'edit'){
-		drawing.isDrawing = true;
-		var newShape = shapeFactory(x, y); 
-		drawing.shapes.push(newShape);
-	} else if (drawing.currentTool === 'fill'){
+	if (drawing.currentTool === 'fill'){
 		var upateLineWAndC = drawing.getShape(x, y);
 		if(upateLineWAndC !== null){
-			updateColorAndLineWidth(upateLineWAndC, drawing.penColor, drawing.lineWidth);
-			ctx.clearRect(0, 0, el.width, el.height);
-			drawing.drawAllShapes();
+			if(upateLineWAndC instanceof Square || upateLineWAndC instanceof Circle) {
+				upateLineWAndC.updateFillColor(drawing.penColor);
+				cleanCanvas();
+			}
 		}
 	}else if (drawing.currentTool === 'edit'){
 		var obj = drawing.getShape(x,y);
 		if(obj !== null){
 			updateTextProperties(obj, drawing.fontSize, drawing.fontName, drawing.fontType); 
-			ctx.clearRect(0, 0, el.width, el.height);
-			drawing.drawAllShapes();	
+			cleanCanvas();	
 		}
-	}else {
+	} else if (drawing.currentTool === 'border'){
+		var upateLineWAndC = drawing.getShape(x, y);
+		if(upateLineWAndC !== null){
+			updateColorAndLineWidth(upateLineWAndC, drawing.penColor, drawing.lineWidth);
+			cleanCanvas();
+		}
+	}else if(drawing.currentTool !== 'select'){
+		drawing.isDrawing = true;
+		var newShape = shapeFactory(x, y); 
+		drawing.shapes.push(newShape);
+	} else {
 		drawing.isMoving = true;
 		drawing.moveMe = drawing.getShape(x, y);
 		if(drawing.moveMe !== null)  drawing.moveMe.prevX = x; 
@@ -63,3 +69,8 @@ $("#myCanvas").mousemove(function(e){
 	}
 
 });
+
+var cleanCanvas = function(){
+	ctx.clearRect(0, 0, el.width, el.height); 
+	drawing.drawAllShapes();
+}

@@ -6,6 +6,7 @@ var drawing = {
 	currentTool: "pen",
 	penColor: "000000",
 	eraserColor: "ffffff",
+	fillColor: "ffffff",
 	undoRedo: "NULL",
 	fontSize: 11,
 	fontName: "Verdana",
@@ -97,8 +98,7 @@ $(".testLink").click(function(){
 		drawing.shapes.push(redo_me);
 	}
 
-	ctx.clearRect(0, 0, el.width, el.height);
-	drawing.drawAllShapes(); 
+	cleanCanvas();
 });
 
 //Upload image
