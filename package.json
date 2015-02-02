@@ -1,0 +1,27 @@
+{
+  "name": "VEFF_PAINT_NEWONE",
+  "version": "1.0.0",
+  "description": "online drawing tool",
+  "main": "mainScript.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dovydas55/VEFF_PAINT_NEWONE.git"
+  },
+  "keywords": [
+    "JavaScript"
+  ],
+  "author": "Dovydas Stankevicius",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dovydas55/VEFF_PAINT_NEWONE/issues"
+  },
+  "homepage": "https://github.com/dovydas55/VEFF_PAINT_NEWONE",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-concat": "^0.5.0",
+    "grunt-contrib-uglify": "^0.7.0"
+  }
+}

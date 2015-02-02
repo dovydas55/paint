@@ -11,7 +11,7 @@ $("#save").click(function(){
 	name = prompt("Name file");
 	
 
-	var param = { "user": "dovydas13", // You should use your own username!
+	var param = { "user": "telma13", // You should use your own username!
 				"name": name,
 				"content": stringifiedArray,
 				"template": false
@@ -40,7 +40,7 @@ $("#save").click(function(){
 
 $("#upload").click(function(){
 
-	var param1 = { "user": "dovydas13",
+	var param1 = { "user": "telma13",
 				//"content": stringifiedArray,
 				"template": false
 		};
